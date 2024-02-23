@@ -1,0 +1,50 @@
+<fuse-loading-bar></fuse-loading-bar>
+<div class="flex flex-1 justify-center h-4/6 md:h-full">
+    <div class="flex w-1/2  sm:p-10 flex-col">
+        <div class="flex p-2">
+            <div class="flex-initial mr-3">
+                <a mat-icon-button color="primary" [routerLink]="['/academico/instrutor']">
+                    <mat-icon>arrow_back</mat-icon>
+                </a>
+            </div>
+            <div class="flex-initial w-150 text-3xl font-bold">
+                Cadastro do Instrutor
+            </div>
+        </div>
+
+
+        <form class="flex-auto md:flex-auto sm:flex-auto mt-8 p-4 bg-card shadow rounded overflow-hidden"
+            [formGroup]="instrutorForm" (ngSubmit)="salvar()">
+            <div class="grid grid-cols-1 gap-1 mb-5" *ngIf="mensagemErro">
+                <fuse-alert [type]="'error'">
+                    <span fuseAlertTitle>Erro no envio do formulário!!</span>
+                    {{mensagemErro}}
+                </fuse-alert>
+            </div>
+            <div *ngIf="carregandoDadosInstrutor" class="grid md:grid-cols-1 gap-2 sm:grid-cols-1">
+                <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+            </div>
+            <div *ngIf="!carregandoDadosInstrutor" class="grid md:grid-cols-1 gap-2 sm:grid-cols-1 mt-8">
+
+                <mat-form-field>
+                    <mat-label>Nome</mat-label>
+                    <input matInput formControlName="nome" required>
+                    <sisedu-erro class="absolute w-full"></sisedu-erro>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Celular</mat-label>
+                    <input mask="(00) 00000-0000" [showMaskTyped]="true" [dropSpecialCharacters]="false" matInput
+                        formControlName="celular" required>
+                    <sisedu-erro class="absolute w-full"></sisedu-erro>
+                </mat-form-field>
+            </div>
+            <div class="flex justify-end">
+                <button class="px-8" mat-flat-button [color]="'primary'" type="submit" [disabled]="instrutorForm.invalid">
+                    Salvar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

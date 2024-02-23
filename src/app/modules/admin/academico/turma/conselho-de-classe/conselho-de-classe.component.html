@@ -1,0 +1,151 @@
+<fuse-loading-bar></fuse-loading-bar>
+<div class="flex flex-1 justify-center h-4/6 h-full">
+    <div class="flex w-full  sm:p-10 flex-col">
+        <div class="flex p-2">
+            <div class="flex-initial mr-3">
+                <a [routerLink]="['/academico/turma/', _idTurma, 'curso', _idCurso, 'estudantes-curso']" color="primary" mat-icon-button>
+                    <mat-icon>arrow_back</mat-icon>
+                </a>
+            </div>
+            <div class="flex-initial w-150 text-3xl font-bold">
+                Conselho de Classe Aluno
+            </div>
+        </div>
+        
+        <form class="flex-auto md:flex-auto sm:flex-auto mt-4 p-4 bg-card shadow rounded overflow-hidden" [formGroup]="conselhoForm" (ngSubmit)="atualizarConselho()">
+            <div class="grid grid-cols-1 gap-1 mb-5" *ngIf="mensagemErro">
+                <fuse-alert [type]="'error'">
+                    <span fuseAlertTitle>Erro no envio do formulário!!</span>
+                    {{mensagemErro}}
+                </fuse-alert>
+            </div>
+            <div class="grid md:grid-cols-1 gap-2 sm:grid-cols-1 mt-8">
+                <div class="w-150 text-2xl font-bold">
+                   {{estudante.nome}} {{estudante.sobrenome}}
+                </div>
+                <div class="w-150 text-2xl font-bold">
+                    {{idadeEstudante}} anos
+                </div>
+                <mat-divider class="mt-6 mb-10"></mat-divider>
+                <div class="w-150 text-2xl font-bold">
+                </div>
+                <mat-form-field>
+                    <mat-label>Conselho Inicial</mat-label>
+                    <mat-select required formControlName="conselhoInicial">
+                        <mat-option *ngFor="let notaInicial of notasIniciais" [value]="notaInicial">{{notaInicial.valueOf()}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Conselho Parcial</mat-label>
+                    <mat-select required formControlName="conselhoParcial">
+                        <mat-option *ngFor="let notaParcial of notasParciais" [value]="notaParcial">{{notaParcial}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Conselho Final</mat-label>
+                    <mat-select required formControlName="conselhoFinal">
+                        <mat-option *ngFor="let notaFinal of notasFinais" [value]="notaFinal">{{notaFinal}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="grid md:grid-cols-1 gap-2 sm:grid-cols-1 mt-8">
+
+                <mat-form-field>
+                    <mat-label>Situação</mat-label>
+                    <input matInput formControlName="situacao" readonly>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Opnião Conselho</mat-label>
+                    <textarea matInput #opiniaoConselho maxlength="1000" formControlName="opiniaoConselho"></textarea>
+                    <mat-hint align="end">{{opiniaoConselho.value?.length || 0}}/1000</mat-hint>
+                    <sisedu-erro class="absolute w-full"></sisedu-erro>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Proximo Curso</mat-label>
+                    <mat-select required formControlName="proximaDisciplinaPrincipalCurso">
+                        <mat-option *ngFor="let disciplina of proximasDisciplinas" [value]="disciplina?.id">{{disciplina?.nome}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <mat-divider class="mt-6 mb-10"></mat-divider>
+            <fuse-alert [type]="'info'" class="mb-10">
+                <span fuseAlertTitle>Informação</span>
+                O valor apresentado no gráfico é calculado com base nas aulas realizadas e, à medida que os dias passam, 
+                tende a aumentar gradualmente. No entanto, se o instrutor não registrar a presença, 
+                o percentual "Não Lançado" irá aumentar.
+            </fuse-alert>
+            <div class="grid md:grid-cols-6 sm:grid-cols-1 mb-5">
+                <div class="col-span-4">
+                    <canvas id="MetricasEstudante">{{ chart }}</canvas>
+                </div>
+            
+                <div class="col-span-2 justify-self-end mr-5">
+                    <fuse-card
+                        class="flex flex-col items-center max-w-120 w-full p-8 pb-6 filter-info ng-tns-c1318422951-279 ng-star-inserted">
+                        <div class="text-2xl font-semibold leading-tight text-center mt-8 ng-tns-c1318422951-279 ng-star-inserted">
+                            Métricas</div>
+                        <div class="text-secondary leading-tight text-center mt-1 ng-tns-c1318422951-279 ng-star-inserted">
+                            {{estudante.nome}} {{estudante.sobrenome}}</div>
+                        <hr class="w-full border-t mt-8 mb-0 ng-tns-c1318422951-279 ng-star-inserted">
+                        <div class="w-full flex items-center justify-between my-4 px-2 ng-tns-c1318422951-279 ng-star-inserted">
+                            <div class="flex flex-col items-center m-2">
+                                <span class="font-bold text-center">Presença</span>
+                                <span class="text-sm font-medium text-secondary">{{metrica?.quantidadePresenca}}</span>
+                            </div>
+                            <div class="flex flex-col items-center m-2">
+                                <span class="font-bold text-center">Ausência</span>
+                                <span class="text-sm font-medium text-secondary">{{metrica?.quantidadeAusente}}</span>
+                            </div>
+                            <div class="flex flex-col items-center m-2">
+                                <span class="font-bold text-center">Atrasos</span>
+                                <span class="text-sm font-medium text-secondary">{{metrica?.quantidadeAtrasado}}</span>
+                            </div>
+                        </div>
+
+                        <hr class="w-full border-t mt-0 mb-8 ng-tns-c1318422951-279 ng-star-inserted">
+
+                        <div class="w-full flex items-center justify-between my-4 px-2 ng-tns-c1318422951-279 ng-star-inserted">
+                            <div class="flex flex-col items-center m-2">
+                                <span class="font-bold text-center">Número de Aulas no Período Letivo</span>
+                                <span class="text-sm font-medium text-secondary">{{metrica?.quantidadeDiasComAula}}</span>
+                            </div>
+                            <div class="flex flex-col items-center m-2">
+                                <span class="font-bold text-center">Número de Aulas Pendentes no Período Letivo</span>
+                                <span class="text-sm font-medium text-secondary">{{metrica?.quantidadeDiasComAula - metrica?.quantidadeAulaRealizadas}}</span>
+                            </div>
+                        </div>
+            
+                        <hr class="w-full border-t mt-8 mb-0 ng-tns-c1318422951-279 ng-star-inserted">
+                        
+                        <div class="w-full flex items-center justify-between my-4 px-2 ng-tns-c1318422951-279 ng-star-inserted">
+                            <div class="flex flex-col items-center m-2">
+                                <span class="font-bold text-center">Faltas Justificadas</span>
+                                <span class="text-sm font-medium text-secondary">{{metrica?.quantidadeFaltaJustificada}}</span>
+                            </div>
+                            <div class="flex flex-col items-center m-2">
+                                <span class="font-bold text-center">Não Lançado</span>
+                                <span class="text-sm font-medium text-secondary">{{metrica?.quantidadeNaoLancado}}</span>
+                            </div>
+                            <div class="flex flex-col items-center m-2">
+                                <span class="font-bold text-center">Quantidades de Aulas Realizadas</span>
+                                <span class="text-sm font-medium text-secondary">{{metrica?.quantidadeAulaRealizadas}}</span>
+                            </div>
+                        </div>
+                        <hr class="w-full border-t mt-0 mb-8 ng-tns-c1318422951-279 ng-star-inserted">
+            
+                        <div class="text-center text-secondary ng-tns-c1318422951-279 ng-star-inserted">
+                           
+                        </div>
+                    </fuse-card>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button class="px-8" mat-flat-button [color]="'primary'" type="submit">
+                    Salvar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

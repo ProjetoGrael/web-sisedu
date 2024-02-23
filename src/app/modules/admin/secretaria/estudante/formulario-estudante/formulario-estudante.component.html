@@ -1,0 +1,699 @@
+<fuse-loading-bar></fuse-loading-bar>
+<div class="flex-auto items-center md:items-start sm:justify-center md:justify-start flex-auto min-w-0">
+
+    <div class="flex-auto p-6 sm:p-10">
+        <div class="h-400 min-h-400 max-h-400">
+
+            <div class="flex items-center p-2 mt-16 mb-8">
+                <div class="flex-initial mr-3">
+                    <a mat-icon-button color="primary"
+                       [routerLink]="['/secretaria/estudante']">
+                        <mat-icon>arrow_back</mat-icon>
+                    </a>
+                </div>
+                <div class="flex-initial w-64 text-3xl font-bold">
+                    Matricular Estudante
+                </div>
+            </div>
+
+
+            <form class="flex-auto md:flex-auto sm:flex-auto mt-8 p-4 bg-card shadow rounded overflow-hidden" [formGroup]="estudanteForm" (ngSubmit)="salvar()">
+
+                <mat-horizontal-stepper
+                        [linear]="false"
+                        #estudanteStepper>
+
+                    <mat-step
+                            [formGroupName]="'informacoesBasicas'"
+                            [stepControl]="estudanteForm.get('informacoesBasicas')"
+                            #estudanteStepperInformacoesBasicas>
+
+                        <ng-template matStepLabel>Informações Básicas</ng-template>
+                        <div class="grid grid-cols-1 gap-1 mb-5" *ngIf="mensagemErro">
+                            <fuse-alert [type]="'error'">
+                                <span fuseAlertTitle>Erro no envio do formulário!!</span>
+                                {{mensagemErro}}
+                            </fuse-alert>
+                        </div>
+                        
+                        <div *ngIf="carregandoDadosEstudante" class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                            <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                            <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                            <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                        </div>
+
+                        <div *ngIf="!carregandoDadosEstudante" class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                                                       
+                            <mat-form-field>
+                                <mat-label>Nome</mat-label>
+                                <input matInput formControlName="nome" required>
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('informacoesBasicas.nome')"></sisedu-erro>
+                            </mat-form-field>
+
+                            <mat-form-field>
+                                <mat-label>Sobrenome</mat-label>
+                                <input matInput formControlName="sobrenome" required>
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('informacoesBasicas.sobrenome')"></sisedu-erro>
+                            </mat-form-field>
+
+                            <mat-form-field>
+                                <mat-label>Nome Social</mat-label>
+                                <input matInput formControlName="nomeSocial">
+                            </mat-form-field>
+                        </div>
+
+                        <div *ngIf="carregandoDadosEstudante" class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                            <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                            <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                            <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                        </div>
+                        
+                        <div *ngIf="!carregandoDadosEstudante" class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                            
+                            <mat-form-field>
+                                <mat-label>CPF</mat-label>
+                                <input matInput
+                                       mask="000.000.000-00"
+                                       [showMaskTyped]="true"
+                                       [dropSpecialCharacters]="false"
+                                       formControlName="cpf">
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('informacoesBasicas.cpf')"></sisedu-erro>
+                            </mat-form-field>
+
+                            <mat-form-field>
+                                <mat-label>Sexo</mat-label>
+                                <mat-select formControlName="sexo" required>
+                                    <mat-option value="M">Masculino</mat-option>
+                                    <mat-option value="F">Feminino</mat-option>
+                                    <mat-option value="O">Outro</mat-option>
+                                </mat-select>
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('informacoesBasicas.sexo')"></sisedu-erro>
+                            </mat-form-field>
+
+                            <mat-form-field>
+                                <mat-label>Data de Nascimento</mat-label>
+                                <input matInput [matDatepicker]="pickerDataNascimento" formControlName="dataNascimento" (dateChange)="maiorIdade()">
+                                <mat-datepicker-toggle matSuffix [for]="pickerDataNascimento"></mat-datepicker-toggle>
+                                <mat-datepicker #pickerDataNascimento></mat-datepicker>
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('informacoesBasicas.dataNascimento')"></sisedu-erro>
+                            </mat-form-field>
+                        </div>
+
+                        <mat-divider class="mt-6 mb-10"></mat-divider>
+
+                        <div *ngIf="carregandoDadosEstudante" class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                            <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                            <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                            <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                        </div>
+
+                        <div *ngIf="!carregandoDadosEstudante" class="grid md:grid-cols-3 gap-3 sm:grid-cols-1">
+
+                            <mat-form-field>
+                                <mat-label>RG</mat-label>
+                                <input matInput formControlName="numeroRg">
+                            </mat-form-field>
+
+                            <mat-form-field class="flex-auto">
+                                <mat-label>Data Emissão</mat-label>
+                                <input matInput [matDatepicker]="pickerDataEmissaoRG" formControlName="dataEmissaoRg">
+                                <mat-datepicker-toggle matSuffix [for]="pickerDataEmissaoRG"></mat-datepicker-toggle>
+                                <mat-datepicker #pickerDataEmissaoRG></mat-datepicker>
+                            </mat-form-field>
+
+                            <mat-form-field>
+                                <mat-label>Orgão Expedidor</mat-label>
+                                <input matInput formControlName="orgaoExpedidorRg">
+                            </mat-form-field>
+                        </div>
+
+                        <div class="grid md:grid-cols-3 gap-3 sm:grid-cols-1">
+                            <div></div>
+                            <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('informacoesBasicas.dataEmissaoRg')"></sisedu-erro>
+                            <div></div>
+                        </div>
+
+                        <div *ngIf="carregandoDadosEstudante" class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                            <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                            <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                            <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                        </div>
+
+                        <div *ngIf="!carregandoDadosEstudante" class="grid md:grid-cols-3 gap-3 sm:grid-cols-1">
+
+                            <mat-form-field>
+                                <mat-label>Naturalidade</mat-label>
+                                <mat-select formControlName="naturalidade">
+                                    <mat-option *ngFor="let estado of estados" [value]="estado.nome">{{estado.nome}}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                            <mat-form-field>
+                                <mat-label>Nacionalidade</mat-label>
+                                <mat-select formControlName="nacionalidade">
+                                    <mat-option value="Brasileira">Brasileira</mat-option>
+                                    <mat-option value="Argentina">Argentina</mat-option>
+                                    <mat-option value="Americana">Americana</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                            <mat-form-field>
+                                <mat-label>Local de Nascimento</mat-label>
+                                <mat-select formControlName="localNascimento">
+                                    <mat-option *ngFor="let localNascimento of locaisNascimento" [value]="localNascimento?.nome">{{localNascimento?.nome}}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <div *ngIf="carregandoDadosEstudante" class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                            <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>                       
+                        </div>
+
+                        <div *ngIf="!carregandoDadosEstudante" class="grid md:grid-cols-3 gap-3 sm:grid-cols-1">
+
+                            <mat-form-field>
+                                <mat-label>Cor ou Etnia</mat-label>
+                                <mat-select formControlName="corEtnia">
+                                    <mat-option value="Branco">Branco</mat-option>
+                                    <mat-option value="Pardo">Pardo</mat-option>
+                                    <mat-option value="Preto">Preto</mat-option>
+                                    <mat-option value="Indígena">Indígena</mat-option>
+                                    <mat-option value="Asiático">Asiático</mat-option>
+                                    <mat-option value="Outras">Outras</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex justify-end">
+                            <button
+                                    class="px-8"
+                                    mat-flat-button
+                                    [color]="'primary'"
+                                    [disabled]="estudanteStepperInformacoesBasicas.stepControl.invalid"
+                                    type="button"
+                                    matStepperNext>
+                                Avançar
+                            </button>
+                        </div>
+                    </mat-step>
+                    <mat-step
+                            [formGroupName]="'endereco'"
+                            [stepControl]="estudanteForm.get('endereco')"
+                            #estudanteStepperEndereco>
+                        <ng-template matStepLabel>Endereço</ng-template>
+                        <div class="grid grid-cols-1 gap-1 mb-5" *ngIf="mensagemErro">
+                            <fuse-alert [type]="'warning'">
+                                <span fuseAlertTitle>Endereço não encontrado</span>
+                                {{mensagemErro}}
+                            </fuse-alert>
+                        </div>
+                        <div class="grid md:grid-cols-4 gap-4 sm:grid-cols-2">
+                            <mat-form-field>
+                                <mat-label>CEP</mat-label>
+                                <input matInput
+                                       mask="00000-000"
+                                       [dropSpecialCharacters]="false"
+                                       (keyup)="buscarEndereco()"
+                                       formControlName="cep">
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('endereco.cep')"></sisedu-erro>
+                            </mat-form-field>
+                        </div>
+                        <mat-divider class="mt-6 mb-10"></mat-divider>
+                        <div class="grid md:grid-cols-5 gap-5 sm:grid-cols-2">
+                            <mat-form-field>
+                                <mat-label>Logradouro</mat-label>
+                                <input matInput formControlName="logradouro">
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('endereco.logradouro')"></sisedu-erro>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Número</mat-label>
+                                <input matInput formControlName="numero" type="number" onkeydown="return event.keyCode !== 69 
+                                && event.keyCode !== 188 && event.keyCode !== 189 && event.keyCode !== 109">
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('endereco.numero')"></sisedu-erro>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Complemento</mat-label>
+                                <input matInput formControlName="complemento">
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Estado</mat-label>
+                                <mat-select formControlName="estado" (selectionChange)="buscarCidadesDoEstado($event)">
+                                    <mat-option *ngFor="let estado of estados" [value]="estado?.sigla">{{estado?.sigla}}</mat-option>
+                                </mat-select>
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('endereco.estado')"></sisedu-erro>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Cidade</mat-label>
+                                <input type="text" matInput formControlName="cidade" [matAutocomplete]="autoCidade">
+                                <mat-autocomplete #autoCidade="matAutocomplete" [displayWith]="displayCidade" (optionSelected)="buscarBairrosDaCidade($event)">
+                                    <mat-option *ngFor="let cidade of filtroCidades | async" [value]="cidade?.nome">
+                                        {{cidade?.nome}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('endereco.cidade')"></sisedu-erro>
+                            </mat-form-field>                
+                        </div>
+
+                        <div class="grid md:grid-cols-4 gap-4 sm:grid-cols-2">
+                            <mat-form-field>
+                                <mat-label>Bairro</mat-label>
+                                <input type="text" matInput formControlName="bairro" [matAutocomplete]="autoBairro">
+                                <mat-autocomplete #autoBairro="matAutocomplete" [displayWith]="displayBairro" (optionSelected)="buscarSubBairrosDoBairro($event)">
+                                    <mat-option *ngFor="let bairro of filtroBairros | async" [value]="bairro?.nome">
+                                        {{bairro?.nome}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('endereco.bairro')"></sisedu-erro>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Sub-Bairro</mat-label>
+                                <input type="text" matInput formControlName="subBairro" [matAutocomplete]="autoSubBairro">
+                                <mat-autocomplete #autoSubBairro="matAutocomplete" [displayWith]="displaySubBairro">
+                                    <mat-option *ngFor="let subBairro of filtroSubBairros | async" [value]="subBairro?.nome">
+                                        {{subBairro?.nome}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>                        
+                        </div>
+                        <div class="flex justify-end">
+                            <button
+                                    class="px-8 mr-2"
+                                    mat-flat-button
+                                    [color]="'accent'"
+                                    type="button"
+                                    matStepperPrevious>
+                                Voltar
+                            </button>
+                            <button
+                                    class="px-8"
+                                    mat-flat-button
+                                    [color]="'primary'"
+                                    [disabled]="estudanteStepperEndereco.stepControl.invalid"
+                                    type="button"
+                                    matStepperNext>
+                                Avançar
+                            </button>
+                        </div>
+                    </mat-step>
+                    <mat-step
+                            [formGroupName]="'filiacao'"
+                            [stepControl]="estudanteForm.get('filiacao')"
+                            #estudanteStepperFiliacao>
+                        <ng-template matStepLabel>Filiação</ng-template>
+
+                        <div class="grid md:grid-cols-1 gap-1 sm:grid-cols-1 mb-5">
+                            <h1>Pai</h1>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                            <mat-form-field>
+                                <mat-label>Nome</mat-label>
+                                <input matInput formControlName="nomePai" required>
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('filiacao.nomePai')"></sisedu-erro>
+                            </mat-form-field>                   
+                            <mat-form-field>
+                                <mat-label>Sobrenome</mat-label>
+                                <input matInput formControlName="sobrenomePai" required>
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('filiacao.sobrenomePai')"></sisedu-erro>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>CPF</mat-label>
+                                <input mask="000.000.000-00"
+                                      [showMaskTyped]="true"
+                                      [dropSpecialCharacters]="false" 
+                                      matInput 
+                                      formControlName="cpfPai">
+                                      <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('filiacao.cpfPai')"></sisedu-erro>
+                            </mat-form-field>
+                        </div>
+                        <div class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                            <mat-form-field>
+                                <mat-label>E-mail</mat-label>
+                                <input matInput formControlName="emailPai">
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('filiacao.emailPai')"></sisedu-erro>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Telefone</mat-label>
+                                <input mask="(00) 0000-0000||(00) 00000-0000"
+                                      [showMaskTyped]="true"
+                                      [dropSpecialCharacters]="false"     
+                                      (keyup)="limparSujeitaMascaraTelefone($event.keyCode, 'filiacao.telefonePai')"                                 
+                                      matInput formControlName="telefonePai">                                
+                            </mat-form-field>
+                        </div>
+                        <div class="grid md:grid-cols-1 gap-1 sm:grid-cols-1 mb-5">
+                            <h1>Mãe</h1>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                            <mat-form-field>
+                                <mat-label>Nome</mat-label>
+                                <input matInput formControlName="nomeMae" required>
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('filiacao.nomeMae')"></sisedu-erro>
+                            </mat-form-field>                   
+                            <mat-form-field>
+                                <mat-label>Sobrenome</mat-label>
+                                <input matInput formControlName="sobrenomeMae" required>
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('filiacao.sobrenomeMae')"></sisedu-erro>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>CPF</mat-label>
+                                <input mask="000.000.000-00"
+                                      [showMaskTyped]="true"
+                                      [dropSpecialCharacters]="false" 
+                                      matInput 
+                                      formControlName="cpfMae">
+                                      <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('filiacao.cpfMae')"></sisedu-erro>
+                            </mat-form-field>
+                        </div>
+                        <div class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                            <mat-form-field>
+                                <mat-label>E-mail</mat-label>
+                                <input matInput formControlName="emailMae">
+                                <sisedu-erro class="absolute w-full" [campo]="estudanteForm.get('filiacao.emailMae')"></sisedu-erro>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Telefone</mat-label>
+                                <input mask="(00) 0000-0000||(00) 00000-0000"
+                                      [showMaskTyped]="true"
+                                      [dropSpecialCharacters]="false"         
+                                      (keyup)="limparSujeitaMascaraTelefone($event.keyCode, 'filiacao.telefoneMae')"                        
+                                      matInput formControlName="telefoneMae">
+                            </mat-form-field>
+                        </div>
+                        <div class="flex justify-end">
+                            <button
+                                    class="px-8 mr-2"
+                                    mat-flat-button
+                                    [color]="'accent'"
+                                    type="button"
+                                    matStepperPrevious>
+                                Voltar
+                            </button>
+                            <button
+                                    class="px-8"
+                                    mat-flat-button
+                                    [color]="'primary'"
+                                    [disabled]="estudanteStepperFiliacao.stepControl.invalid"
+                                    type="button"
+                                    matStepperNext>
+                                Avançar
+                            </button>
+                        </div>
+
+                    </mat-step>
+                    <mat-step
+                            formArrayName="contatos"
+                            [stepControl]="estudanteForm.get('contatos')"
+                            #estudanteStepperContatos>
+
+                        <ng-template matStepLabel>Contato</ng-template>
+                        <div class="grid grid-cols-1 gap-1 mb-5" *ngIf="mensagemErro">
+                            <fuse-alert [type]="'error'">
+                                <span fuseAlertTitle>Erro no envio do formulário!!</span>
+                                {{mensagemErro}}
+                            </fuse-alert>
+                        </div>
+
+                        <div *ngFor="let contato of contatos?.controls; let indice = index">
+                            <div [formGroupName]="indice" class="grid md:grid-cols-4 gap-4 sm:grid-cols-2 mt-4">
+                                <mat-form-field>
+                                    <mat-label>Qual o tipo de contato?</mat-label>
+                                    <mat-select formControlName="tipo" (selectionChange)="tipoContatoSelecionado(indice, $event)">
+                                        <mat-option *ngFor="let tipoContato of tiposContato" [value]="tipoContato.descricao">{{tipoContato.descricao}}</mat-option>                                    
+                                    </mat-select>
+                                </mat-form-field>
+                                <mat-form-field *ngIf="tiposContatoSelecionado[indice]">
+                                    <mat-label>Contato</mat-label>
+                                    <input formControlName="contato" matInput [mask]="mascarasContato[indice]" [dropSpecialCharacters]="false">                           
+                                </mat-form-field>
+                                <mat-form-field *ngIf="tiposContatoSelecionado[indice]">
+                                    <mat-label>A quem pertence?</mat-label>
+                                    <input formControlName="pertence" matInput>
+                                </mat-form-field>                              
+                                <div class="self-center">
+                                    <a matTooltip="Deletar contato" color="warn" mat-mini-fab (click)="deletarContato(indice)">
+                                        <mat-icon class="icon-size-5" svgIcon="feather:trash"></mat-icon>
+                                    </a>
+                                </div>
+                            </div>                       
+                        </div>                        
+                        <div class="self-center mt-8">
+                            <a matTooltip="Adicionar novo contato" color="primary" mat-flat-button (click)="adicionarNovoContato()" *ngIf="limiteContatos()">
+                                <mat-icon class="icon-size-5" svgIcon="feather:plus"></mat-icon>
+                                Novo Contato
+                            </a>
+                        </div>
+                        <div class="flex justify-end">
+                            <button
+                                    class="px-8 mr-2"
+                                    mat-flat-button
+                                    [color]="'accent'"
+                                    type="button"
+                                    matStepperPrevious>
+                                Voltar
+                            </button>
+                            <button
+                                    class="px-8"
+                                    mat-flat-button
+                                    [color]="'primary'"
+                                    [disabled]="estudanteStepperContatos.stepControl.invalid"
+                                    type="button"
+                                    matStepperNext>
+                                Avançar
+                            </button>
+                        </div>
+                    </mat-step>
+                    <mat-step
+                            [formGroupName]="'confirmacao'"
+                            [stepControl]="estudanteForm.get('confirmacao')"
+                            #estudanteStepperConfirmacao>
+                        <ng-template matStepLabel>Confirmação</ng-template>
+
+                        <div class="grid grid-cols-1 gap-1 mb-5">
+                            <fuse-alert [type]="'warning'">
+                                <span fuseAlertTitle>Atenção!!</span>
+                                Antes de salvar certifique-se que os dados estão corretos.
+                            </fuse-alert>
+                        </div>
+                        <div class="grid grid-cols-1 gap-1 mb-5" *ngIf="mensagemErro">
+                            <fuse-alert [type]="'error'">
+                                <span fuseAlertTitle>Erro no envio do formulário!!</span>
+                                {{mensagemErro}}
+                            </fuse-alert>
+                        </div>
+                        <div class="grid grid-cols-1 gap-1 mb-2">
+                            <h1>Informações Básicas</h1>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div class="grid md:grid-cols-5 gap-4 sm:grid-cols-2">
+                            <mat-form-field>
+                                <mat-label>Nome</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('informacoesBasicas.nome').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Sobrenome</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('informacoesBasicas.sobrenome').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>CPF</mat-label>
+                                <input matInput type="text"
+                                       [value]="estudanteForm.get('informacoesBasicas.cpf').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Sexo</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('informacoesBasicas.sexo').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                        </div>
+                        <div class="grid md:grid-cols-5 gap-4 sm:grid-cols-2">
+                            <mat-form-field>
+                                <mat-label>Data de Nascimento</mat-label>
+                                <input matInput type="text"
+                                       [value]="estudanteForm.get('informacoesBasicas.dataNascimento').value | dateFormatDateToString"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Cor ou Etnia</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('informacoesBasicas.corEtnia').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Naturalidade</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('informacoesBasicas.naturalidade').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Nacionalidade</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('informacoesBasicas.nacionalidade').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                        </div>
+                        <div class="grid md:grid-cols-5 gap-4 sm:grid-cols-2">
+                            <mat-form-field>
+                                <mat-label>Numero RG</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('informacoesBasicas.numeroRg').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Data Emissão RG</mat-label>
+                                <input matInput type="text"
+                                       [value]="estudanteForm.get('informacoesBasicas.dataEmissaoRg').value | dateFormatDateToString"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Orgão Expedidor RG</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('informacoesBasicas.orgaoExpedidorRg').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-1 gap-1 sm:grid-cols-1 mb-5">
+                            <h1>Endereco</h1>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div class="grid md:grid-cols-4 gap-4 sm:grid-cols-2 mb-5">
+                            <mat-form-field>
+                                <mat-label>Logradouro</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('endereco.logradouro').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Numero</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('endereco.numero').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Complemento</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('endereco.complemento').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Bairro</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('endereco.bairro').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Sub-bairro</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('endereco.subBairro').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                        </div>
+                        <div class="grid md:grid-cols-4 gap-4 sm:grid-cols-2 mb-5">
+                            <mat-form-field>
+                                <mat-label>Cidade</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('endereco.cidade').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>UF</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('endereco.estado').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>CEP</mat-label>
+                                <input matInput type="text"
+                                       [value]="estudanteForm.get('endereco.cep').value"
+                                       [readonly]="true"/>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="grid md:grid-cols-1 gap-1 sm:grid-cols-1 mb-5">
+                            <h1>Filiação</h1>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div class="grid md:grid-cols-3 gap-3 sm:grid-cols-2 mb-5">
+                            <mat-form-field>
+                                <mat-label>Nome Pai</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('filiacao.nomePai').value" [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Sobrenome Pai</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('filiacao.sobrenomePai').value" [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>CPF Pai</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('filiacao.cpfPai').value" [readonly]="true"/>
+                            </mat-form-field>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-2 sm:grid-cols-2 mb-5">
+                            <mat-form-field>
+                                <mat-label>E-mail Pai</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('filiacao.emailPai').value" [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Telefone Pai</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('filiacao.telefonePai').value" [readonly]="true"/>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="grid md:grid-cols-3 gap-3 sm:grid-cols-2 mb-5">
+                            <mat-form-field>
+                                <mat-label>Nome Mãe</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('filiacao.nomeMae').value" [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Sobrenome Mãe</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('filiacao.sobrenomeMae').value" [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>CPF Mãe</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('filiacao.cpfMae').value" [readonly]="true"/>
+                            </mat-form-field>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-2 sm:grid-cols-2 mb-5">
+                            <mat-form-field>
+                                <mat-label>E-mail Mãe</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('filiacao.emailMae').value" [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Telefone Mãe</mat-label>
+                                <input matInput type="text" [value]="estudanteForm.get('filiacao.telefoneMae').value" [readonly]="true"/>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="grid md:grid-cols-1 gap-1 sm:grid-cols-1 mb-5">
+                            <h1>Contato</h1>
+                            <mat-divider></mat-divider>
+                        </div>
+                        <div class="grid md:grid-cols-3 gap-4 sm:grid-cols-2 mb-5" *ngFor="let contatoForm of contatos?.controls">
+                            <mat-form-field>
+                                <mat-label>Qual o tipo de contato?</mat-label>
+                                <input matInput type="text" [value]="contatoForm.value.tipo" [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Contato</mat-label>
+                                <input matInput type="text" [value]="contatoForm.value.contato" [readonly]="true"/>
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>A quem pertence?</mat-label>
+                                <input matInput type="text" [value]="contatoForm.value.pertence" [readonly]="true"/>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex justify-end">
+                            <button
+                                    class="px-8 mr-2"
+                                    mat-flat-button
+                                    [color]="'accent'"
+                                    type="button"
+                                    matStepperPrevious>
+                                Voltar
+                            </button>
+                            <button
+                                    class="px-8"
+                                    mat-flat-button
+                                    [color]="'primary'"
+                                    [disabled]="botaoSalvarDesabilitado || estudanteForm.invalid"
+                                    type="submit">
+                                Salvar
+                            </button>
+                        </div>
+                    </mat-step>
+                </mat-horizontal-stepper>
+            </form>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,69 @@
+<fuse-loading-bar></fuse-loading-bar>
+<div class="overflow-x-auto flex flex-col flex-auto min-w-180">
+    <div class="flex-auto p-6 sm:p-10">
+        <div class="overflow-x-auto h-200 min-h-200">
+            <div class="mb-4 text-2xl font-bold">Estudantes no Curso</div>
+                <div class="bg-white pr-5 pl-5 pt-2 mt-10">
+                    <div class="mb-4 text-2xl font-bold">Estudantes Inscritos</div>
+                    <div *ngIf="isEmptyIncritos" class="flex flex-col items-center justify-center h-full pb-10">
+                        <div class="text-center">
+                            <h1 class="text-24">Não há estudantes inscritos nesse Curso</h1>
+                        </div>
+                    </div>
+                    <div *ngIf="!isEmptyIncritos" class="overflow-x-auto flex justify-between items-center p-2">
+                        <div class="flex-initial w-64" style="padding: -50px;" >
+                            <mat-form-field class="min-w-full">
+                                <mat-label>Filtrar</mat-label>
+                                <input (keyup)="filtrarInscritos($event)" matInput type="text">
+                            </mat-form-field>
+                        </div>
+                        
+                        <div class="flex-initial w-140 mr-60">
+                                <mat-form-field class="min-w-full">
+                                    <mat-label>Observações</mat-label>
+                                    <textarea matInput type="text" style="position: relative;" [(ngModel)]="observacao" name="observacao" placeholder="Digite sua mensagem"></textarea>
+                                </mat-form-field>
+                        </div>
+                    </div>
+                    
+                    <div *ngIf="!isEmptyIncritos">
+                        <table [dataSource]="dataSourceInscritos" class="min-w-full mat-elevation-z8" mat-table matSort>
+
+                            <ng-container matColumnDef="matricula">
+                                <th *matHeaderCellDef mat-header-cell mat-sort-header>Matrícula</th>
+                                <td *matCellDef="let estudante" mat-cell> {{estudante.matricula}} </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="nome">
+                                <th *matHeaderCellDef mat-header-cell mat-sort-header>Nome</th>
+                                <td *matCellDef="let estudante" mat-cell>{{estudante.nome}} {{estudante.sobrenome}}</td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="dataNascimento">
+                                <th *matHeaderCellDef mat-header-cell mat-sort-header>Data de Nascimento</th>
+                                <td *matCellDef="let estudante" mat-cell> {{estudante.dataNascimento}} </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="acoes">
+                                <th *matHeaderCellDef mat-header-cell>Opções</th>
+                                <td *matCellDef="let estudante" mat-cell>
+                                    <button [matMenuTriggerFor]="menu" aria-label="Opções" mat-icon-button>
+                                        <mat-icon>reorder</mat-icon>
+                                    </button>
+                                    <mat-menu #menu="matMenu">
+                                        <button [routerLink]="conselho(estudante.id)" mat-menu-item>
+                                            <mat-icon>import_contacts</mat-icon>
+                                            <span>Conselho de classe</span>
+                                        </button>
+                                    </mat-menu>
+                                </td>
+                            </ng-container>
+                            <tr *matHeaderRowDef="displayedColumnsInscritos" mat-header-row></tr>
+                            <tr *matRowDef="let row; columns: displayedColumnsInscritos;" mat-row></tr>
+                        </table>
+                    </div>
+                    <div class="mt-2 pt-2"></div>
+                </div>
+            </div>
+        </div>
+</div>

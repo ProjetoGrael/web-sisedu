@@ -1,0 +1,11 @@
+<div class="grid md:grid-cols-1 gap-2 sm:grid-cols-1 mb-12">
+  <div class="text-4xl">
+    <span>{{estudante?.nome}} {{estudante?.sobrenome}}</span>
+  </div>
+  <div>
+    <mat-chip-list>
+      <mat-chip color="accent" matTooltip="Matrícula" selected>{{estudante?.matricula}}</mat-chip>
+    </mat-chip-list>
+  </div>
+</div>
+<mat-divider class="mb-8"></mat-divider>

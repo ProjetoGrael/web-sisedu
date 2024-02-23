@@ -1,0 +1,54 @@
+<fuse-loading-bar></fuse-loading-bar>
+<div class="flex flex-1 justify-center h-4/6 md:h-full">
+    <div class="flex w-1/2  sm:p-10 flex-col">
+        <div class="flex p-2">
+            <div class="flex-initial mr-3">
+                <a mat-icon-button color="primary" [routerLink]="['/academico/turma']">
+                    <mat-icon>arrow_back</mat-icon>
+                </a>
+            </div>
+            <div class="flex-initial w-150 text-3xl font-bold">
+                Cadastro da Turma
+            </div>
+        </div>
+
+
+        <form class="flex-auto md:flex-auto sm:flex-auto mt-4 p-4 bg-card shadow rounded overflow-hidden" [formGroup]="turmaForm" (ngSubmit)="salvar()">
+            <div class="grid grid-cols-1 gap-1 mb-5" *ngIf="mensagemErro">
+                <fuse-alert [type]="'error'">
+                    <span fuseAlertTitle>Erro no envio do formulário!!</span>
+                    {{mensagemErro}}
+                </fuse-alert>
+            </div>
+            <div class="grid md:grid-cols-1 gap-2 sm:grid-cols-1 mt-8">
+
+                <mat-form-field>
+                    <mat-label>Período Letivo</mat-label>
+                    <mat-select required formControlName="periodoLetivo" [disabled]="_id">
+                        <mat-option *ngFor="let periodoLetivo of periodosLetivos" [value]="periodoLetivo?.id">{{periodoLetivo?.nome}}</mat-option>                  
+                    </mat-select>
+                    <sisedu-erro class="absolute w-full"></sisedu-erro>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Nome</mat-label>
+                    <input matInput formControlName="nomeFantasia" required>
+                    <sisedu-erro class="absolute w-full"></sisedu-erro>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Cometário</mat-label>
+                    <textarea matInput #comentario maxlength="200"  formControlName="comentario"></textarea>
+                    <mat-hint align="end">{{comentario.value?.length || 0}}/200</mat-hint>
+                    <sisedu-erro class="absolute w-full"></sisedu-erro>
+                </mat-form-field>
+
+            </div>
+            <div class="flex justify-end">
+                <button class="px-8" mat-flat-button [color]="'primary'" type="submit" [disabled]="turmaForm.invalid">
+                    Salvar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

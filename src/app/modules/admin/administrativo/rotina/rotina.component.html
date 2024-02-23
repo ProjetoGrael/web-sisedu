@@ -1,0 +1,93 @@
+<div class="overflow-x-auto flex flex-col flex-auto min-w-180">
+    <div class="flex-auto p-6 sm:p-10">
+        <div class="overflow-x-auto h-200 min-h-200">
+            <div class="mb-4 text-3xl font-bold">Cadastro das Rotinas</div>
+            <div class="bg-white pr-5 pl-5 pt-2">
+                <div class="overflow-x-auto flex justify-between items-center p-2">
+                    <div class="flex-initial w-32">
+                        <a mat-flat-button class="min-w-full" color="primary"
+                           [routerLink]="['/administrativo/rotina/formulario']">
+                            <mat-icon>add</mat-icon>
+                            Novo
+                        </a>
+                    </div>
+                    <div class="flex-initial w-64">
+                        <mat-form-field class="min-w-full">
+                            <mat-label>Filtrar</mat-label>
+                            <input matInput type="text" #input>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="grid-cols-12 mb-5">
+                    <fuse-alert
+                            *ngIf="showAlert"
+                            [appearance]="'outline'"
+                            [showIcon]="true"
+                            [dismissible]="false"
+                            [type]="alert.type">
+                        {{alert.message}}
+                    </fuse-alert>
+                </div>
+
+                <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" style="width: 100%" matSort>
+
+                    <ng-container matColumnDef="nome">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nome</th>
+                        <td mat-cell *matCellDef="let rotina">{{rotina?.nome}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="tipo_rotina">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo da Rotina</th>
+                        <td mat-cell *matCellDef="let rotina">{{rotina?.tipoRotina?.nome}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="ativo">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Ativo</th>
+                        <td mat-cell *matCellDef="let rotina">
+                          <mat-icon *ngIf="rotina?.ativo" class="icon-size-5 text-green-600" svgIcon="feather:check"></mat-icon>   
+                          <mat-icon *ngIf="!rotina?.ativo" class="icon-size-5 text-red-600" svgIcon="feather:x"></mat-icon>                 
+                        </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="opcoes">
+                        <th mat-header-cell *matHeaderCellDef>Opções</th>
+                            <td mat-cell *matCellDef="let rotina">
+                                <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Opções">
+                                    <mat-icon>reorder</mat-icon>
+                                </button>
+                                <mat-menu #menu="matMenu">                               
+                                    <button *ngIf="rotina?.ativo" mat-menu-item [routerLink]="editar(rotina.id)">
+                                        <mat-icon >edit</mat-icon>
+                                        <span>Editar</span>
+                                    </button>    
+                                    <button *ngIf="rotina?.ativo" mat-menu-item [routerLink]="agendar(rotina.id)">
+                                        <mat-icon svgIcon="feather:calendar" ></mat-icon>
+                                        <span>Agendar</span>
+                                    </button>
+                                    <button *ngIf="!rotina?.ativo" mat-menu-item (click)="ativar(rotina.id)">
+                                        <mat-icon svgIcon="feather:check"></mat-icon>
+                                        <span>Ativar</span>
+                                    </button>
+
+                                    <button *ngIf="rotina?.ativo" mat-menu-item (click)="desativar(rotina.id)">
+                                        <mat-icon svgIcon="feather:x"></mat-icon>
+                                        <span>Desativar</span>
+                                    </button>
+                                    
+                                </mat-menu>
+                            </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+                <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+                               [length]="paginacao?.total"
+                               [pageIndex]="paginacao?.pagina"
+                               aria-label="Select page"
+                               showFirstLastButtons>
+                </mat-paginator>
+            </div>
+        </div>
+    </div>
+</div>

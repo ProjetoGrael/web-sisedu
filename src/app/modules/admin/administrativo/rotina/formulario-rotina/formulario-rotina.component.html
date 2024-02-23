@@ -1,0 +1,45 @@
+<div class="flex flex-1 justify-center ">
+    <div class="flex w-1/2 h-3/5 sm:p-10 flex-col">
+        <div class="flex p-2">
+            <div class="flex-initial mr-3">
+                <a mat-icon-button color="primary" [routerLink]="['/administrativo/rotina']">
+                    <mat-icon>arrow_back</mat-icon>
+                </a>
+            </div>
+            <div class="flex-initial w-150 text-3xl font-bold">
+                Rotina
+            </div>
+        </div>
+        <form class="flex-auto mt-8 p-4 bg-card shadow rounded overflow-hidden" [formGroup]="rotinaForm" (submit)="salvar()">
+
+            <div class="flex-auto mb-2">
+                <fuse-alert *ngIf="showAlert" [appearance]="'outline'" [showIcon]="true" 
+                    [type]="alert.type" >
+                    {{alert.message}}
+                </fuse-alert>
+            </div>
+
+            <div class="flex flex-col">
+                <mat-form-field>
+                    <mat-label>Nome</mat-label>
+                    <input matInput formControlName="nome" required>
+                    <sisedu-erro class="absolute w-full" [campo]="rotinaForm.get('nome')"></sisedu-erro>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Tipo Rotina</mat-label>
+                    <mat-select formControlName="tipoRotina" required>
+                        <mat-option *ngFor="let tipoRotina of tiposRotinas" [value]="tipoRotina.nome">
+                            {{tipoRotina.nome}}</mat-option>
+                    </mat-select>
+                    <sisedu-erro class="absolute w-full" [campo]="rotinaForm.get('tipoRotina')"></sisedu-erro>
+                </mat-form-field>
+            </div>
+
+            <div class="flex justify-end ">
+                <button class="px-8" mat-flat-button color="primary" type="submit" [disabled]="rotinaForm.invalid">
+                    Salvar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,146 @@
+<fuse-loading-bar></fuse-loading-bar>
+<div class="flex-auto items-center md:items-start sm:justify-center md:justify-start flex-auto min-w-0">
+  <div class="flex-auto p-6 sm:p-10">
+    <div class="h-400 min-h-400 max-h-400">
+      <div class="flex items-center p-2 mt-16 mb-8">
+        <div class="flex-initial mr-3">
+          <a
+            mat-icon-button
+            color="primary"
+            [routerLink]="['/secretaria/estudante']"
+          >
+            <mat-icon>arrow_back</mat-icon>
+          </a>
+        </div>
+        <div class="flex-initial w-64 text-3xl font-bold">
+          Situação no Projeto
+        </div>
+      </div>
+      <mat-card class="p-12">
+        <sisedu-cabecalho-estudante></sisedu-cabecalho-estudante> 
+        <div *ngIf="mensagemErro">
+          <fuse-alert [type]="'warn'">
+            <span fuseAlertTitle>Erro</span>
+            {{mensagemErro}}
+          </fuse-alert>
+        </div>
+        <div class="grid mt-20">     
+          <div class="text-4xl font-extrabold tracking-tight leading-none">Status</div>
+          <div class="mt-1.5 text-lg text-secondary">Veja a linha do tempo das alterações dos status do estudante no Projeto</div>
+
+          <ng-container *ngIf="(situacoesProjeto$ | async) as situacoesProjeto; else loading">
+            <ng-container *ngIf="situacoesProjeto.length; else noActivity">
+                <div>
+                    <ol>
+                        <ng-container *ngFor="let situacaoProjeto of situacoesProjeto; let i = index; let first = first; let last = last; trackBy: trackByFn">
+
+                            <ng-container *ngIf="first">
+                                <li class="relative flex py-7">
+                                    <div matTooltip="Último Status" class="relative py-2 px-8 text-md font-medium leading-5 rounded-full bg-primary text-on-primary mr-3">
+                                        {{situacaoProjeto.status}}
+                                    </div>
+                                    <div matTooltip="Ano de Ingresso" class="relative py-2 px-8 text-md font-medium leading-5 rounded-full bg-accent text-on-primary">
+                                      {{situacaoProjeto.anoIngresso}}
+                                      <input matInput hidden="true" [load]="setAnoIngresso(situacaoProjeto.anoIngresso)">
+                                    </div>
+                                   <div class="ml-4">
+                                    <button matTooltip="Alterar o Status" color="primary" mat-icon-button (click)="alterar()" *ngIf="!alteracaoData.includes(true)">
+                                      <mat-icon class="icon-size-5" svgIcon="feather:edit"></mat-icon>
+                                    </button>
+                                   </div>
+                                </li>
+                            </ng-container>
+
+                            
+                            <li class="relative flex">
+                                
+                                <ng-container *ngIf="!last">
+                                    <div class="absolute top-14 left-5 w-0.5 h-full -ml-px bg-gray-300 dark:bg-gray-600"></div>
+                                </ng-container>
+
+                                <div class="relative flex flex-auto items-center">
+                                  
+                                  <ng-container *ngIf="first">
+                                    <div class="flex flex-shrink-0 items-center justify-center w-10 h-10 mr-4 rounded-full bg-green-400">
+                                      <mat-icon class="icon-size-5 text-white" svgIcon="feather:check"></mat-icon>
+                                    </div>
+                                  </ng-container>
+                                
+                                  <ng-container *ngIf="!first">
+                                    <div class="flex flex-shrink-0 items-center justify-center w-10 h-10 mr-4 rounded-full bg-red-400">
+                                      <mat-icon class="icon-size-5 text-white" svgIcon="feather:x"></mat-icon>
+                                    </div>
+                                  </ng-container>
+                                
+                                 
+                                  <div class="flex flex-col flex-none items-start mr-4 py-6">
+                                    <input matInput hidden="true" [load]="alteracaoData[i]=alteracaoData[i]">
+                                    
+                                    <ng-container *ngIf="situacaoProjeto.status">
+                                      <div [innerHTML]="situacaoProjeto.status"></div>
+                                    </ng-container>
+                                    <div class="flex flex-col sm:flex-row sm:items-center mt-2 sm:mt-1 sm:space-x-2 text-md leading-5">                               
+                                      <div *ngIf="!alteracaoData[i]" class="text-secondary">
+                                        {{situacaoProjeto.dataInclusao}}
+                                      </div>                                    
+                                      <div *ngIf="alteracaoData[i]">
+                                        <mat-form-field class="w-40">
+                                          <input matInput mask="00/00/0000 00:00" [showMaskTyped]="true" [dropSpecialCharacters]="false" [(ngModel)]="novaDataSituacao">
+                                        </mat-form-field>
+                                      </div>
+                                      <div>
+                                        <button *ngIf="!alteracaoData[i]" matTooltip="Alterar data" color="primary" mat-icon-button (click)="alteracaoData[i] = true; alteracao = false">
+                                          <mat-icon class="icon-size-5" svgIcon="feather:edit"></mat-icon>
+                                        </button>
+                                      </div>
+                                      <div>
+                                        <button *ngIf="alteracaoData[i]" matTooltip="Alterar" color="primary" mat-raised-button (click)="alterarData(i, situacaoProjeto.id)">
+                                          <mat-icon class="icon-size-5" svgIcon="feather:plus"></mat-icon>                                       
+                                        </button>
+                                      </div>
+                                      <div>
+                                        <button *ngIf="alteracaoData[i]" matTooltip="Cancelar" color="warn" mat-raised-button (click)="alteracaoData[i] = false">
+                                          <mat-icon class="icon-size-5" svgIcon="feather:x"></mat-icon>                                         
+                                        </button>
+                                      </div>                                     
+                                    </div>
+                                  </div>
+                                  <div class="flex flex-none items-center" *ngIf="first && alteracao && !alteracaoData.includes(true)">
+                                    <div class="flex">
+                                      <mat-icon class="mr-4" svgIcon="feather:arrow-right"></mat-icon>
+                                    </div>
+                                    <div class="flex mr-4 mt-4">
+                                      <mat-form-field class="min-w-60">
+                                        <mat-select [formControl]="statusProjetoSelecionado" (selectionChange)="visibilidadeBotaoIncluir()">
+                                          <mat-option *ngFor="let status of statusProjeto" [value]="status?.descricao">{{status?.descricao}}
+                                          </mat-option>
+                                        </mat-select>
+                                      </mat-form-field>
+                                    </div>
+                                    <div class="flex">
+                                      <button matTooltip="Incluir novo status" mat-mini-fab color="primary" (click)="incluir()" *ngIf="botaoIncluir">
+                                        <mat-icon>add</mat-icon>
+                                      </button>
+                                    </div>
+                                  </div>
+                                
+                                </div>
+                            </li>
+                        </ng-container>
+                    </ol>
+                </div>
+            </ng-container>
+        </ng-container>
+        </div>
+        
+        <ng-template #loading>
+         
+        </ng-template>
+        
+        <ng-template #noActivity>
+          Nenhuma histórico encontrado
+        </ng-template>
+      </mat-card>
+    </div>
+  </div>
+</div>

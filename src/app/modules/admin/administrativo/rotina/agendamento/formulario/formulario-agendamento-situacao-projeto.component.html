@@ -1,0 +1,171 @@
+<div class="flex-auto items-center md:items-start sm:justify-center md:justify-start flex-auto min-w-0">
+
+    <div class="flex-auto p-6 sm:p-10">
+        <div class="h-400 min-h-400 max-h-400">
+
+            <div class="flex items-center p-2 mt-16 mb-8">
+                <div class="flex-initial mr-3">
+                    <a mat-icon-button color="primary" [routerLink]="['/administrativo/rotina']">
+                        <mat-icon>arrow_back</mat-icon>
+                    </a>
+                </div>
+                <div class="flex-initial w-150 text-3xl font-bold">
+                    Rotina
+                </div>
+            </div>
+            <mat-card class="p-12">
+                <form class="flex-auto md:flex-auto sm:flex-auto mt-4" [formGroup]="agendamentoForm" (ngSubmit)="agendar()">
+                    <div class="flex mb-12">
+                        <div class="text-4xl flex items-center">
+                            <mat-icon svgIcon="feather:calendar" class="mr-2 icon-size-10"></mat-icon>
+                            <span>Agendamento</span>
+                        </div>
+                    </div>
+
+                    <mat-divider></mat-divider>
+
+                    <div class="grid-cols-12 mt-16">
+                        <fuse-alert *ngIf="showAlert" [appearance]="'outline'" [showIcon]="true" [name]="'mensagem'" [type]="alert.type" >
+                            {{alert.message}}
+                        </fuse-alert>
+                    </div>
+
+                    <div class="flex flex-row flex-wrap mt-16 mb-8">
+
+                        <div class="flex items-center">
+                            <mat-label class="p-2"> Agendar anualmente no dia, </mat-label>
+
+                            <mat-form-field class="mt-4">
+                                <mat-select formControlName="diaMes">
+                                    <mat-option *ngFor="let diasMes of dataHora?.diasMes" [value]="diasMes">
+                                        {{diasMes}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                        </div>
+
+
+                        <div class="flex items-center">
+                            <mat-label class="p-2">de</mat-label>
+                            <mat-form-field class="mt-4">
+                                <mat-select formControlName="mes">
+                                    <mat-option *ngFor="let mes of dataHora?.meses" [value]="mes?.descricao">
+                                        {{mes?.descricao}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="flex items-center">
+                            <mat-label class="p-2">às</mat-label>
+                            <mat-form-field class="mt-4">
+                                <mat-select formControlName="hora">
+                                    <mat-option *ngFor="let hora of dataHora?.horas" [value]="hora">
+                                        {{hora}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <span class="p-2">hora(s)</span>
+                        </div>
+
+                        <div class="flex items-center">
+                            <mat-label class="pr-2">e</mat-label>
+                            <mat-form-field class="mt-4">
+                                <mat-select formControlName="minuto">
+                                    <mat-option *ngFor="let minuto of dataHora?.minutos" [value]="minuto">
+                                        {{minuto}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <span class="p-2">minuto(s)</span>
+                        </div>
+
+                        <div class="flex items-center">
+
+                            <mat-label class="pr-2">a alteração do status na situação no projeto de</mat-label>
+                            <mat-form-field class="mt-4" class="w-40 mt-4">
+                                <mat-select formControlName="statusAtual">
+                                    <mat-option *ngFor="let status of statusProjeto" [value]="status?.descricao">
+                                        {{status?.descricao}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+
+                            <mat-label class="p-2">para</mat-label>
+                            <mat-form-field class="mt-4" class="w-40 mt-4">
+                                <mat-select formControlName="proximoStatus">
+                                    <mat-option *ngFor="let status of statusProjeto" [value]="status?.descricao">
+                                        {{status?.descricao}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="flex items-center">
+                            <button mat-raised-button color="primary" type="submit" class="ml-4" [disabled]="agendamentoForm.invalid">
+                                <mat-icon svgIcon="feather:calendar" class="mr-2"> </mat-icon>
+                                {{reagendamento ? 'Reagendar' : 'Agendar'}}
+                            </button>
+
+                            <a *ngIf="reagendamento" mat-raised-button color="warn" type="submit" class="ml-4" (click)="cancelar()">
+                                <mat-icon svgIcon="feather:x-square" class="mr-2"> </mat-icon>
+                                Cancelar  
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="mt-16">
+                        <table mat-table [dataSource]="agendamentos" class="mat-elevation-z8" ngClass="w-full">
+
+                            <ng-container matColumnDef="agendamento">
+                                <th mat-header-cell *matHeaderCellDef> Agendamento</th>
+                                <td mat-cell *matCellDef="let agendamento"> 
+                                    Agendado anualmente no dia, {{agendamento.periodo.diaMes}} de {{agendamento.periodo.mes}} às {{agendamento.periodo.hora}} hora(s) 
+                                    e {{agendamento.periodo.minuto}} minuto(s)
+                                    a alteração do status da situação no projeto de <span class="font-bold">{{agendamento.tarefaSituacaoProjeto.statusAtual}} </span>
+                                    para <span class="font-bold">{{agendamento.tarefaSituacaoProjeto.proximoStatus}}</span>
+                                </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="ativo">
+                                <th mat-header-cell *matHeaderCellDef> ativo</th>
+                                <td mat-cell *matCellDef="let agendamento"> 
+                                    <mat-icon *ngIf="agendamento?.periodo?.ativo" class="icon-size-5 text-green-600" svgIcon="feather:check"></mat-icon>   
+                                    <mat-icon *ngIf="!agendamento?.periodo?.ativo" class="icon-size-5 text-red-600" svgIcon="feather:x"></mat-icon> 
+                                </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="opcoes">
+                                <th mat-header-cell *matHeaderCellDef> Opções </th>
+                                <td mat-cell *matCellDef="let agendamento"> 
+                                    <a mat-icon-button [matMenuTriggerFor]="menu" aria-label="Opções">
+                                        <mat-icon>reorder</mat-icon>
+                                    </a>
+                                    <mat-menu #menu="matMenu">   
+                                        <a *ngIf="agendamento?.periodo?.ativo" mat-menu-item (click)="reagendar(agendamento)">
+                                            <mat-icon svgIcon="feather:calendar"></mat-icon>
+                                            <span>Reagendar</span>
+                                        </a>
+
+                                        <a *ngIf="!agendamento?.periodo?.ativo" mat-menu-item (click)="ativar(agendamento?.periodo?.id)">
+                                            <mat-icon svgIcon="feather:check"></mat-icon>
+                                            <span>Ativar</span>
+                                        </a>
+    
+                                        <a *ngIf="agendamento?.periodo?.ativo" mat-menu-item (click)="desativar(agendamento?.periodo?.id)">
+                                            <mat-icon svgIcon="feather:x"></mat-icon>
+                                            <span>Desativar</span>
+                                        </a>
+                                               
+                                    </mat-menu>
+                                </td>
+                            </ng-container>
+
+                            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                        </table>
+                    </div>
+                </form>
+            </mat-card>
+        </div>
+    </div>

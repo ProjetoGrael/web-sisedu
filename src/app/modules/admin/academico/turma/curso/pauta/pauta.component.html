@@ -1,0 +1,131 @@
+<div class="flex flex-1 justify-center h-4/6 md:h-full">
+    <div class="flex w-full  sm:p-10 flex-col">
+        <div class="flex p-2">
+            <div class="flex-initial mr-3">
+                <a mat-icon-button color="primary" routerLink='/academico/turma/meus-cursos'>
+                    <mat-icon>arrow_back</mat-icon>
+                </a>
+            </div>
+            <div class="flex-initial w-150 text-3xl font-bold">
+                Pauta
+            </div>
+        </div>
+
+
+        <div class="flex md:flex sm:flex mt-4 p-4 bg-card shadow rounded overflow-hidden">
+
+            <div class="w-full p-4">
+                <div *ngIf="mensagemErro" class="mt-5 mb-5">
+                    <fuse-alert [type]="'warn'">
+                        <span fuseAlertTitle>ERRO</span>
+                        <span>{{mensagemErro}}</span>
+                    </fuse-alert>
+                </div>
+                <div class="grid md:grid-cols-3 gap-4 sm:grid-cols-2 mb-5 mt-5">
+                    <mat-form-field>
+                        <mat-label>Dia da Aula</mat-label>
+                        <input matInput type="text" [value]="dataPauta | dateFormatDateToString" [readonly]="true" />
+                    </mat-form-field>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4 sm:grid-cols-2 mb-5">
+                    <mat-form-field>
+                        <mat-label>Notas de Aula</mat-label>
+                        <textarea matInput #notasAulaInput maxlength="500" (input)="setNotasAula($event)">
+                            {{notasAula}}
+                        </textarea>
+                        <mat-hint align="end">{{notasAulaInput.value?.length || 0}}/500</mat-hint>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Observações de Aula</mat-label>
+                        <textarea matInput #observacoesAulaInput maxlength="500" (input)="setObservacoesAula($event)">
+                            {{observacoesAula}}
+                        </textarea>
+                        <mat-hint align="end">{{observacoesAulaInput.value?.length || 0}}/500</mat-hint>
+                    </mat-form-field>
+                </div>
+                <mat-divider class="mb-8"></mat-divider>
+                <mat-label class="w-150 text-1xl font-bold">Plano de Aula</mat-label>
+                <div class="mt-5">
+                    <table mat-table [dataSource]="dataSourcePlanoAula" class="mat-elevation-z8" style="width: 100%" matSort>
+                        <ng-container matColumnDef="select">
+                            <th mat-header-cell *matHeaderCellDef>
+                              #
+                            </th>
+                            <td mat-cell *matCellDef="let row">
+                              <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? toggle(row) : null"
+                                            [checked]="selection.isSelected(row)">
+                              </mat-checkbox>
+                            </td>
+                          </ng-container>
+
+                        <ng-container matColumnDef="ordenacao">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Ordenação</th>
+                            <td mat-cell *matCellDef="let planoAula">{{planoAula.ordenacao}}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="anotacoes">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Anotações</th>
+                            <td mat-cell class="truncate max-w-30" [matTooltip]="planoAula.anotacoes"
+                                *matCellDef="let planoAula">{{planoAula.anotacoes}}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="observacoes">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>Observações</th>
+                            <td mat-cell class="truncate max-w-30" [matTooltip]="planoAula.observacoes"
+                                *matCellDef="let planoAula">{{planoAula.observacoes}}</td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+                    <mat-paginator [pageSizeOptions]="[5, 10, 20]" [length]="paginacao?.total"
+                        [pageIndex]="paginacao?.pagina" aria-label="Selecione a página" showFirstLastButtons>
+                    </mat-paginator>
+                </div>
+
+
+                <mat-divider class="mb-8"></mat-divider>
+                <div class="grid mb-5">
+                    <table mat-table class="mat-elevation-z8 w-full mr-3" [dataSource]="presencasTable">
+
+                        <ng-container matColumnDef="estudante">
+                            <th mat-header-cell *matHeaderCellDef class="p-4">Estudante</th>
+                            <td mat-cell *matCellDef="let presenca" class="p-4 truncate max-w-30">
+                                {{presenca.estudante.nome}} {{presenca.estudante.sobrenome}}
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="presenca">
+                            <th mat-header-cell *matHeaderCellDef class="p-4 text-center">Presença</th>
+                            <td mat-cell *matCellDef="let presenca" class="p-4 text-center">
+                                <mat-select (selectionChange)="_incluirPresenca(presenca.estudante.id, $event.value)"
+                                    [value]="presenca?.situacao">
+                                    <mat-option *ngFor="let situacaoPresenca of situacoesPresenca"
+                                        [value]="situacaoPresenca">{{situacaoPresenca}}</mat-option>
+                                </mat-select>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="participacao">
+                            <th mat-header-cell *matHeaderCellDef class="p-4 text-center">Participação</th>
+                            <td mat-cell *matCellDef="let presenca" class="p-4 text-center">
+                                <mat-select *ngIf="_habilitarParticipacao(presenca.estudante.id)"
+                                    (selectionChange)="_incluirParticipacao(presenca.estudante.id, $event.value)"
+                                    [value]="presenca?.participacao">
+                                    <mat-option *ngFor="let participacao of participacoes"
+                                        [value]="participacao">{{participacao}}</mat-option>
+                                </mat-select>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="colunasPresenca"></tr>
+                        <tr mat-row *matRowDef="let row; columns: colunasPresenca;" class="p-4"></tr>
+                    </table>
+                    <div class="mt-4">
+                        <a class="px-8" mat-flat-button [color]="'primary'" (click)="salvar()">
+                            Salvar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>

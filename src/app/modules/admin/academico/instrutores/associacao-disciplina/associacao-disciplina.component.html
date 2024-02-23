@@ -1,0 +1,145 @@
+<div class="flex flex-1 justify-center ">
+    <div class="flex w-full sm:p-10 flex-col">
+        <div class="flex p-2">
+            <div class="flex-initial mr-3">
+                <a mat-icon-button color="primary" [routerLink]="['/academico/instrutor']">
+                    <mat-icon>arrow_back</mat-icon>
+                </a>
+            </div>
+            <div class="flex-initial w-150 text-3xl font-bold">
+                Associar Disciplina
+            </div>
+        </div>
+        <form class="flex-auto mt-8 p-4 bg-card shadow rounded overflow-hidden">
+            <div class="grid md:grid-cols-1 gap-2 sm:grid-cols-1 mb-4">
+                <div class="text-4xl">
+                  <span>{{instrutor?.nome}}</span>
+                </div>
+            </div>
+            <mat-divider class="mb-8"></mat-divider>
+            <div class="grid-cols-12 mb-5">
+              <fuse-alert
+                      *ngIf="showAlert"
+                      [appearance]="'outline'"
+                      [showIcon]="true"
+                      [dismissible]="true"
+                      [type]="alert.type"
+                      [@shake]="alert.type === 'success'">
+                  {{alert.message}}
+              </fuse-alert>
+          </div>
+            <div class="grid md:grid-cols-4 gap-2 sm:grid-cols-8 mt-8">
+                <mat-form-field>
+                    <mat-label>Nome da Disciplina</mat-label>
+                    <input matInput (change)="nomeDisciplina = $event.target.value" [value]="nomeDisciplina">   
+                    <mat-icon matSuffix>search</mat-icon>         
+                </mat-form-field>
+              <div class="flex items-center">
+                <button class="px-8 ml-2"
+                   mat-flat-button
+                   [color]="'primary'"
+                   type="button" (click)="pesquisarDisciplina()">
+                   <span *ngIf="this.nomeDisciplina.length === 0">Pesquisar Todas</span>
+                   <span *ngIf="this.nomeDisciplina.length !== 0">Pesquisar por Nome</span>
+                </button>
+                <button class="px-8 ml-2"
+                   mat-flat-button
+                   [color]="'warn'"
+                   type="button" (click)="cancelar()">
+                  Cancelar
+                </button>
+              </div>
+            </div>
+            <div class="mt-4" *ngIf="tabelaDisciplinaVisivel">
+                <table mat-table [dataSource]="disciplinaPesquisadas" class="mat-elevation-z8 w-5/6">
+                    <ng-container matColumnDef="nome">
+                      <th mat-header-cell *matHeaderCellDef> Nome </th>
+                      <td mat-cell *matCellDef="let disciplina"> {{disciplina.nome}} </td>
+                    </ng-container>
+                  
+                    <ng-container matColumnDef="tipo">
+                      <th mat-header-cell *matHeaderCellDef> Tipo </th>
+                      <td mat-cell *matCellDef="let disciplina"> {{disciplina.tipo}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="programa">
+                        <th mat-header-cell *matHeaderCellDef> Programa </th>
+                        <td mat-cell *matCellDef="let disciplina"> {{disciplina.programa.nome}} </td>
+                      </ng-container>
+                  
+                    <ng-container matColumnDef="carga_horaria">
+                      <th mat-header-cell *matHeaderCellDef> Carga Horária </th>
+                      <td mat-cell *matCellDef="let disciplina"> {{disciplina.cargaHoraria}} </td>
+                    </ng-container>
+                  
+                    <ng-container matColumnDef="associar">
+                      <th mat-header-cell *matHeaderCellDef>Associar</th>
+                      <td mat-cell *matCellDef="let disciplina">  
+                        <button mat-icon-button [color]="'primary'" (click)="associarDisciplina(disciplina.id)">
+                            <mat-icon>add</mat-icon>
+                          </button>
+                      </td>
+                    </ng-container>
+                  
+                    <tr mat-header-row *matHeaderRowDef="colunasDisciplinaPesquisada"></tr>
+                    <tr mat-row *matRowDef="let row; columns: colunasDisciplinaPesquisada;" class="p-4"></tr>
+                  </table>
+            </div>
+            <mat-divider class="mt-8"></mat-divider>
+            <h1 class="mt-8">Disciplinas Associadas</h1>
+            <div class="mt-4">
+                <table mat-table [dataSource]="disciplinasAssociadas" class="mat-elevation-z8 w-5/6">
+                    <ng-container matColumnDef="nome">
+                      <th mat-header-cell *matHeaderCellDef> Nome </th>
+                      <td mat-cell *matCellDef="let associacao"> {{associacao.disciplina.nome}} </td>
+                    </ng-container>
+                  
+                    <ng-container matColumnDef="tipo">
+                      <th mat-header-cell *matHeaderCellDef> Tipo </th>
+                      <td mat-cell *matCellDef="let associacao"> {{associacao.disciplina.tipo}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="programa">
+                        <th mat-header-cell *matHeaderCellDef> Programa </th>
+                        <td mat-cell *matCellDef="let associacao"> {{associacao.disciplina.programa.nome}} </td>
+                      </ng-container>
+                  
+                    <ng-container matColumnDef="carga_horaria">
+                      <th mat-header-cell *matHeaderCellDef> Carga Horária </th>
+                      <td mat-cell *matCellDef="let associacao"> {{associacao.disciplina.cargaHoraria}} </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="ativo">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header>Ativo</th>
+                      <td mat-cell *matCellDef="let associacao">
+                        <mat-icon *ngIf="associacao?.ativo" class="icon-size-5 text-green-600" svgIcon="feather:check"></mat-icon>   
+                        <mat-icon *ngIf="!associacao.ativo" class="icon-size-5 text-red-600" svgIcon="feather:x"></mat-icon> 
+                      </td>
+                    </ng-container>
+                  
+                    <ng-container matColumnDef="opcao">
+                      <th mat-header-cell *matHeaderCellDef>Opção</th> 
+                      <td mat-cell *matCellDef="let associacao">
+                        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Opções">
+                            <mat-icon>reorder</mat-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                            <button *ngIf="associacao.ativo" mat-menu-item (click)="desassociarDisciplina(associacao.id)">
+                                <mat-icon>close</mat-icon>
+                                <span>Desativar</span>
+                            </button>
+                            <button *ngIf="!associacao.ativo" mat-menu-item (click)="ativarAssociacao(associacao.id)">
+                                <mat-icon>check</mat-icon>
+                                <span>Ativar</span>
+                            </button>
+                        </mat-menu>
+                    </td>
+                    </ng-container>
+                  
+                    <tr mat-header-row *matHeaderRowDef="colunasDisciplinaAssociadas"></tr>
+                    <tr mat-row *matRowDef="let row; columns: colunasDisciplinaAssociadas;" class="p-4"></tr>
+                  </table>
+            </div>
+        </form>
+    </div>
+</div>

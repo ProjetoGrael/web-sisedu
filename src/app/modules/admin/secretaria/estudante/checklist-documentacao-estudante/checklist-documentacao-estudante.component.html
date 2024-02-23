@@ -1,0 +1,104 @@
+<fuse-loading-bar></fuse-loading-bar>
+<div class="flex flex-col flex-auto min-w-0">
+    <div class="flex-auto p-6 sm:p-10">
+        <div class="h-400 min-h-400 max-h-400">
+            <div class="flex items-center p-2 mt-16 mb-8">
+                <div class="flex-initial mr-3">
+                    <a mat-icon-button color="primary"
+                       [routerLink]="['/secretaria/estudante']">
+                        <mat-icon>arrow_back</mat-icon>
+                    </a>
+                </div>
+                <div class="flex-initial text-3xl font-bold">
+                    CheckList Documentação
+                </div>
+            </div>
+
+            <form class="p-4 bg-card shadow rounded overflow-hidden" [formGroup]="checkListForm" (ngSubmit)="salvar()">
+                
+                <sisedu-cabecalho-estudante></sisedu-cabecalho-estudante>
+
+                <div *ngIf="carregandoCheckList" class="grid gap-4 md:grid-cols-2 md:ml-10 sm:grid-cols-1 sm:p-0 sm:ml-5">
+                    <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                    <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                    <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                    <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                    <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                    <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                    <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                    <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                    <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                    <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                </div>
+
+                <div *ngIf="!carregandoCheckList" class="grid md:grid-cols-2 md:ml-10 sm:grid-cols-1 sm:p-0 sm:ml-5">
+                    <div class="w-100 font-bold">
+                        <mat-checkbox [color]="'primary'" formControlName="rgEstudante"
+                                      [checked]="checkListForm.get('rgEstudante').value">
+                            RG Estudante
+                        </mat-checkbox>
+                    </div>
+                    <div class="w-100 font-bold">
+                        <mat-checkbox [color]="'primary'" formControlName="rgResponsavel"
+                                      [checked]="checkListForm.get('rgResponsavel').value">
+                            RG Responsável
+                        </mat-checkbox>
+                    </div>
+                    <div class="w-100 font-bold">
+                        <mat-checkbox [color]="'primary'" formControlName="cpfEstudante"
+                                      [checked]="checkListForm.get('cpfEstudante').value">
+                            CPF Estudante
+                        </mat-checkbox>
+                    </div>
+                    <div class="w-100 font-bold">
+                        <mat-checkbox [color]="'primary'" formControlName="cpfResponsavel"
+                                      [checked]="checkListForm.get('cpfResponsavel').value">
+                            CPF Responsável
+                        </mat-checkbox>
+                    </div>
+                    <div class="w-100 font-bold">
+                        <mat-checkbox [color]="'primary'" formControlName="comprovanteResidencia"
+                                      [checked]="checkListForm.get('comprovanteResidencia').value">
+                            Comprovante Residência
+                        </mat-checkbox>
+                    </div>
+                    <div class="w-100 font-bold">
+                        <mat-checkbox [color]="'primary'" formControlName="declaracaoEscolar"
+                                      [checked]="checkListForm.get('declaracaoEscolar').value">
+                            Declaração Escolar
+                        </mat-checkbox>
+                    </div>
+                    <div class="w-100 font-bold">
+                        <mat-checkbox [color]="'primary'" formControlName="certidaoNascimento"
+                                      [checked]="checkListForm.get('certidaoNascimento').value">
+                            Certidão de Nascimento
+                        </mat-checkbox>
+                    </div>
+                    <div class="w-100 font-bold">
+                        <mat-checkbox [color]="'primary'" formControlName="termoAudioVideo"
+                                      [checked]="checkListForm.get('termoAudioVideo').value">
+                            Termo de Audio e Vídeo
+                        </mat-checkbox>
+                    </div>
+                    <div class="w-100 font-bold">
+                        <mat-checkbox [color]="'primary'" formControlName="atestadoMedico"
+                                      [checked]="checkListForm.get('atestadoMedico').value">
+                            Atestado Médico
+                        </mat-checkbox>
+                    </div>
+                    <div class="w-100 font-bold">
+                        <mat-checkbox [color]="'primary'" formControlName="historicoEscolar"
+                                      [checked]="checkListForm.get('historicoEscolar').value">
+                            Histórico Escolar
+                        </mat-checkbox>
+                    </div>
+                </div>
+                <div class="flex justify-end sm:mt-10 pt-10">
+                    <button class="px-10" mat-flat-button [color]="'primary'" [disabled]="botaoSalvarDesabilitado"
+                            type="submit">Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

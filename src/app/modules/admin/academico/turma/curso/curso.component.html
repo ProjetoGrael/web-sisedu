@@ -1,0 +1,229 @@
+<div class="flex flex-1 justify-center ">
+    <div class="flex xl:w-full sm:w-full sm:p-10 flex-col">
+        <div class="flex p-2">
+            <div class="flex-initial mr-3">
+                <a mat-icon-button color="primary" [routerLink]="['/academico/turma']">
+                    <mat-icon>arrow_back</mat-icon>
+                </a>
+            </div>
+            <div class="flex-initial w-150 text-3xl font-bold">
+                Cursos da Turma
+            </div>
+        </div>
+        <form class="flex-auto mt-8 p-4 bg-card shadow rounded overflow-hidden" [formGroup]="cursoForm" (ngSubmit)="salvar()" #formCurso="ngForm">
+            <div class="grid md:grid-cols-1 gap-2 sm:grid-cols-1 mb-4">
+                <div class="text-4xl">
+                    <span>{{turma.nomeFantasia}}</span>
+                </div>
+            </div>
+            <mat-divider class="mb-8"></mat-divider>
+            <div class="grid grid-cols-1 gap-1 mb-5">
+                <fuse-alert [type]="'warning'">
+                    <span fuseAlertTitle>Atenção!!</span>
+                    <ul>
+                        <li>1 - Uma vez o curso adicionado não será possível alterar a disciplina, horário e dias da semana.</li>
+                        <li>2 - Só será permitido a alteração do Instrutor.</li>
+                        <li>3 - Se desativar o Curso não será possível ativa-lo novamente.</li>
+                    </ul>
+                    
+                </fuse-alert>
+            </div>
+            <div class="grid grid-cols-1 gap-1 mb-5" *ngIf="mensagemErro">
+                <fuse-alert [type]="'error'">
+                    <span fuseAlertTitle>Erro!!</span>
+                    <div style="white-space: pre-wrap;">{{mensagemErro}}</div>
+                </fuse-alert>
+            </div>
+            <div class="grid md:grid-cols-2 gap-2 sm:grid-cols-2">
+                    <mat-form-field>
+                        <mat-label>Disciplina</mat-label>
+                        <mat-select formControlName="disciplina" (selectionChange)="buscarInstrutorDisciplina($event.value)" [disabled]="editarInstrutor">
+                            <mat-option *ngFor="let disciplina of disciplinas" [value]="disciplina.id">
+                                {{disciplina.nome}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                        <mat-label>Instrutor</mat-label>
+                        <mat-select formControlName="instrutorDisciplina">
+                            <mat-option *ngFor="let instrutorDisciplina of instrutoresDisciplina" [value]="instrutorDisciplina.id">
+                                {{instrutorDisciplina.instrutor.nome}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                        <mat-label>Horário de Início</mat-label>
+                        <input mask="00:00" [dropSpecialCharacters]="false" matInput formControlName="horarioInicio" [readonly]="editarInstrutor">
+                    </mat-form-field>
+
+                    <mat-form-field>
+                        <mat-label>Horário de Término</mat-label>
+                        <input mask="00:00" [dropSpecialCharacters]="false" matInput formControlName="horarioTermino" [readonly]="editarInstrutor">
+                    </mat-form-field>
+            </div>
+            <div class="grid md:grid-cols-1 gap-2 sm:grid-cols-1">
+                <div>
+                   Dias de aula
+                </div>
+            </div>
+            <div class="grid md:grid-cols-5 gap-2 sm:grid-cols-5 mt-4">
+                <div class="w-100">
+                    <mat-checkbox color="primary" formControlName="segundaFeira" [disabled]="editarInstrutor">
+                        Segunda-Feira
+                    </mat-checkbox>
+                </div>
+                <div class="w-100">
+                    <mat-checkbox color="primary" formControlName="tercaFeira" [disabled]="editarInstrutor"> 
+                        Terça-Feira
+                    </mat-checkbox>
+                </div>
+                <div class="w-100">
+                    <mat-checkbox color="primary" formControlName="quartaFeira"  [disabled]="editarInstrutor">
+                        Quarta-Feira
+                    </mat-checkbox>
+                </div>
+                <div class="w-100">
+                    <mat-checkbox color="primary" formControlName="quintaFeira" [disabled]="editarInstrutor">
+                        Quinta-Feira
+                    </mat-checkbox>
+                </div>
+                <div class="w-100">
+                    <mat-checkbox color="primary" formControlName="sextaFeira"  [disabled]="editarInstrutor">
+                        Sexta-Feira
+                    </mat-checkbox>
+                </div>
+            </div>
+            <div class="flex justify-end mt-8">
+                <a class="px-8 mr-4" mat-flat-button [color]="'warn'" (click)="resetarFormulario()">
+                    Cancelar
+                </a>
+                <button class="px-8" mat-flat-button [color]="'primary'" type="submit" [disabled]="cursoForm.invalid">
+                   {{editarInstrutor ? 'Editar Instrutor' : 'Adicionar' }} 
+                </button>             
+            </div>
+            <mat-divider class="mt-8"></mat-divider>
+            <h1 class="text-2xl mb-4 mt-4">Cursos</h1>
+            <div>
+              <table mat-table class="mat-elevation-z8 w-full" [dataSource]="cursos">
+                
+                <ng-container matColumnDef="disciplina">
+                  <th mat-header-cell *matHeaderCellDef class="p-4"> Disciplina </th>
+                  <td mat-cell *matCellDef="let curso" class="p-4 truncate max-w-30"
+                      [matTooltip]="curso.instrutorDisciplina.disciplina.nome"> 
+                    {{curso.instrutorDisciplina.disciplina.nome}} 
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="instrutor">
+                    <th mat-header-cell *matHeaderCellDef class="p-4"> Instrutor </th>
+                    <td mat-cell *matCellDef="let curso" class="p-4 truncate max-w-30" 
+                        [matTooltip]="curso.instrutorDisciplina.instrutor.nome">  
+                        {{curso.instrutorDisciplina.instrutor.nome}}                       
+                    </td>
+                  </ng-container>
+
+                <ng-container matColumnDef="horario_inicio">
+                    <th mat-header-cell *matHeaderCellDef class="p-4 text-center"> Horário Início </th>
+                    <td mat-cell *matCellDef="let curso" class=" p-4 text-center">{{curso.horarioInicio}}</td>
+                  </ng-container>
+              
+                <ng-container matColumnDef="horario_termino">
+                  <th mat-header-cell *matHeaderCellDef class="p-4 text-center"> Horário Término </th>
+                  <td mat-cell *matCellDef="let curso" class="p-4 text-center">{{curso.horarioTermino}}</td>
+                </ng-container>
+                <ng-container matColumnDef="segunda">
+                    <th mat-header-cell *matHeaderCellDef class="p-4 text-center"> Segunda-Feira</th>
+                    <td mat-cell *matCellDef="let curso" class="p-4 text-center">
+                        <mat-icon class="icon-size-5 text-green-600" *ngIf="curso.segundaFeira">check</mat-icon>
+                        <mat-icon *ngIf="!curso.segundaFeira" class="icon-size-5 text-red-600" svgIcon="feather:x"></mat-icon> 
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="terca">
+                    <th mat-header-cell *matHeaderCellDef class="p-4 text-center"> Terça-Feira</th>
+                    <td mat-cell *matCellDef="let curso" class="p-4 text-center">
+                        <mat-icon class="icon-size-5 text-green-600" *ngIf="curso.tercaFeira">check</mat-icon>
+                        <mat-icon *ngIf="!curso.tercaFeira" class="icon-size-5 text-red-600" svgIcon="feather:x"></mat-icon> 
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="quarta">
+                    <th mat-header-cell *matHeaderCellDef class="p-4 text-center"> Quarta-Feira </th>
+                    <td mat-cell *matCellDef="let curso" class="p-4 text-center">
+                        <mat-icon class="icon-size-5 text-green-600" *ngIf="curso.quartaFeira">check</mat-icon>
+                        <mat-icon *ngIf="!curso.quartaFeira" class="icon-size-5 text-red-600" svgIcon="feather:x"></mat-icon> 
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="quinta">
+                    <th mat-header-cell *matHeaderCellDef class="p-4 text-center"> Quinta-Feira</th>
+                    <td mat-cell *matCellDef="let curso" class="p-4 text-center">
+                        <mat-icon class="icon-size-5 text-green-600" *ngIf="curso.quintaFeira">check</mat-icon>
+                        <mat-icon *ngIf="!curso.quintaFeira" class="icon-size-5 text-red-600" svgIcon="feather:x"></mat-icon> 
+                    </td>
+                  </ng-container>
+                  <ng-container matColumnDef="sexta">
+                    <th mat-header-cell *matHeaderCellDef class="p-4 text-center"> Sexta-Feira </th>
+                    <td mat-cell *matCellDef="let curso" class="p-4 text-center">
+                        <mat-icon class="icon-size-5 text-green-600" *ngIf="curso.sextaFeira">check</mat-icon>
+                        <mat-icon *ngIf="!curso.sextaFeira" class="icon-size-5 text-red-600" svgIcon="feather:x"></mat-icon> 
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="disciplina_principal">
+                    <th mat-header-cell *matHeaderCellDef class="p-4 text-center"> Disciplina Principal </th>
+                    <td mat-cell *matCellDef="let curso" class="p-4 text-center">
+                        <mat-icon class="icon-size-5 text-green-600" *ngIf="curso.disciplinaPrincipal">check</mat-icon>
+                        <mat-icon *ngIf="!curso.disciplinaPrincipal" class="icon-size-5 text-red-600" svgIcon="feather:x"></mat-icon> 
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="ativo">
+                    <th mat-header-cell *matHeaderCellDef class="p-4 text-center">Ativo</th>
+                    <td mat-cell *matCellDef="let curso" class="p-4 text-center">
+                        <mat-icon class="icon-size-5 text-green-600" *ngIf="curso.ativo">check</mat-icon>
+                        <mat-icon *ngIf="!curso.ativo" class="icon-size-5 text-red-600" svgIcon="feather:x"></mat-icon> 
+                    </td>
+                  </ng-container>
+              
+                <ng-container matColumnDef="opcao">
+                  <th mat-header-cell *matHeaderCellDef class="text-right">Opção</th> 
+                  <td mat-cell *matCellDef="let curso" class="text-right">
+                    <a mat-icon-button [matMenuTriggerFor]="menu" aria-label="Opções" *ngIf="curso.ativo">
+                        <mat-icon>reorder</mat-icon>
+                    </a>
+                    <mat-menu #menu="matMenu" >
+                        <a *ngIf="curso.ativo" mat-menu-item (click)="editar(curso.id)">
+                            <mat-icon>edit</mat-icon>
+                            <span>Editar</span>
+                        </a>
+                        <a *ngIf="!curso.disciplinaPrincipal" mat-menu-item (click)="definirDisciplinaPrincipal(curso.id, true)">
+                            <mat-icon>add</mat-icon>
+                            <span>Disciplina Principal (Sim)</span>
+                        </a>
+                        <a *ngIf="curso.disciplinaPrincipal" mat-menu-item (click)="definirDisciplinaPrincipal(curso.id, false)">
+                            <mat-icon>close</mat-icon>
+                            <span>Disciplina Principal (Não)</span>
+                        </a>
+                        <a *ngIf="curso.ativo" mat-menu-item [routerLink]="visualizarAlunos(curso.id)">
+                            <mat-icon>group</mat-icon>
+                            <span>Visualizar Estudantes</span>
+                        </a>
+                        <a *ngIf="curso.ativo" mat-menu-item [routerLink]="inscreverAlunos(curso.id)">
+                            <mat-icon>group_add</mat-icon>
+                            <span>Increver Estudantes</span>
+                        </a>
+                        <a *ngIf="curso.ativo" mat-menu-item (click)="desativar(curso.id)">
+                            <mat-icon>close</mat-icon>
+                            <span>Desativar</span>
+                        </a>
+                    </mat-menu>
+                </td>
+                </ng-container>
+              
+                <tr mat-header-row *matHeaderRowDef="colunasDisciplinaAssociadas"></tr>
+                <tr mat-row *matRowDef="let row; columns: colunasDisciplinaAssociadas;" class="p-4"></tr>
+              </table>
+            </div>
+        </form>
+    </div>
+</div>

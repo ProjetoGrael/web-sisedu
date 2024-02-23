@@ -1,0 +1,57 @@
+<fuse-loading-bar></fuse-loading-bar>
+<div class="flex flex-col flex-auto min-w-0">
+    <div class="flex-auto p-6 sm:p-10">
+        <div class="h-400 min-h-400 max-h-400">
+            <div class="flex items-center p-2 mb-8">
+                <div class="flex-initial mr-3">
+                    <a mat-icon-button color="primary"
+                       [routerLink]="['/secretaria/estudante']">
+                        <mat-icon>arrow_back</mat-icon>
+                    </a>
+                </div>
+                <div class="text-3xl font-bold">
+                    Visualização Parcial do Estudante:
+                </div>
+            </div>
+            <div class="p-4 bg-card shadow rounded-b relative flex flex-col flex-auto p-6 pt-0 sm:p-12 sm:pt-0">
+                <div class="w-full max-w-3xl">
+                    <h2 class="mt-10 font-bold">Matricula: </h2>
+                    <p>{{estudanteParcial.matricula}}</p>
+                </div>
+                <div class="w-full max-w-3xl">
+                    <h2 class="mt-10 font-bold">Nome: </h2>
+                    <p>{{estudanteParcial.nome}}</p>
+                </div>
+                <div class="w-full max-w-3xl">
+                    <h2 class="mt-10 font-bold truncate">Sexo: </h2>
+                    <p>{{(estudanteParcial.sexo == 'M' ? 'Masculino' : 'Feminino')}}</p>
+                </div>
+                <div class="w-full max-w-3xl">
+                    <h2 class="mt-10 font-bold truncate">Turma: </h2>
+                    <p>{{estudanteParcial.turma}}</p>
+                </div>
+                <div class="w-full max-w-3xl">
+                    <h2 class="mt-10 font-bold truncate">Idade: </h2>
+                    <p>{{estudanteParcial.idade}}</p>
+                </div>
+                <div class="w-full max-w-3xl">
+                    <h2 class="mt-10 font-bold truncate">Tem Observação: </h2>
+                    <p>{{(estudanteParcial.temObservacao ? "Sim" : "Não")}}</p>
+                </div>
+                <div class="w-full max-w-3xl">
+                    <h2 class="mt-10 font-bold truncate">Tem Turmas Passadas: </h2>
+                    <p>{{(estudanteParcial.temTurmasPassadas ? "Sim" : "Não")}}</p>
+                </div>
+                <table *ngIf="estudanteParcial.temObservacao" mat-table [dataSource]="dataSource"
+                       class=" mt-6 mat-elevation-z8 w-full">
+                    <ng-container matColumnDef="observacoes">
+                        <th mat-header-cell *matHeaderCellDef> Observações</th>
+                        <td mat-cell *matCellDef="let observacao">{{observacao}}</td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

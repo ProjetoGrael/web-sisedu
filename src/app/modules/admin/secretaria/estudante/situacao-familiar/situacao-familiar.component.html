@@ -1,0 +1,59 @@
+<fuse-loading-bar></fuse-loading-bar>
+<div class="flex flex-col flex-auto min-w-0">
+    <div class="flex-auto p-6 sm:p-10">
+        <div class="h-400 min-h-400 max-h-400">
+            <div class="flex items-center p-2 mt-16 mb-8">
+                <div class="flex-initial mr-3">
+                    <a mat-icon-button color="primary" [routerLink]="['/secretaria/estudante']">
+                        <mat-icon>arrow_back</mat-icon>
+                    </a>
+                </div>
+                <div class="flex-initial text-3xl font-bold">
+                    Situação Familiar do Estudante
+                </div>
+            </div>
+
+            <form class="p-4 bg-card shadow rounded overflow-hidden" [formGroup]="situacaoFamiliarForm" (ngSubmit)="salvar()">
+                <sisedu-cabecalho-estudante></sisedu-cabecalho-estudante>
+                <div class="grid grid-cols-1 gap-1 mb-5" *ngIf="mensagemErro">
+                    <fuse-alert [type]="'error'">
+                        <span fuseAlertTitle>Erro no envio do formulário!!</span>
+                        {{mensagemErro}}
+                    </fuse-alert>
+                </div>
+                <div class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                    <mat-form-field>
+                        <mat-label>Números de Residentes</mat-label>
+                        <input matInput type="number" formControlName="numeroResidentes" required>
+                        <sisedu-erro class="absolute w-full" [campo]="situacaoFamiliarForm.get('numeroResidentes')"></sisedu-erro>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Renda Familiar</mat-label>
+                        <input matInput formControlName="rendaFamiliar" currencyMask>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>NIS/PIS/NIT</mat-label>
+                        <input type="number" matInput formControlName="nisPisNit" >
+                        <sisedu-erro class="absolute w-full" ></sisedu-erro>
+                    </mat-form-field>
+                    
+                </div>
+                <div class="grid md:grid-cols-3 gap-2 sm:grid-cols-1 place-items-center mt-4">
+                    <mat-checkbox [color]="'primary'" formControlName="estudanteTrabalhando" (change)="habilitarValidacaoNomeEmpresa($event)">
+                        Estudante Trabalhando?
+                    </mat-checkbox>
+                    <mat-form-field class="w-full" *ngIf="isEstudanteTrabalhando()">
+                        <mat-label>Nome da Empresa</mat-label>
+                        <input matInput formControlName="nomeEmpresa">
+                        <sisedu-erro class="absolute w-full" ></sisedu-erro>
+                    </mat-form-field>
+                </div>
+                <div class="flex justify-end sm:mt-10 pt-10">
+                    <button class="px-10" mat-flat-button [color]="'primary'" type="submit" [disabled]="situacaoFamiliarForm.invalid">
+                        Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

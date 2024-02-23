@@ -1,0 +1,112 @@
+<fuse-loading-bar></fuse-loading-bar>
+<div class="flex-auto items-center md:items-start sm:justify-center md:justify-start flex-auto min-w-0">
+
+    <div class="flex-auto p-6 sm:p-10">
+        <div class="h-400 min-h-400 max-h-400">
+
+            <div class="flex items-center p-2 mt-16 mb-8">
+                <div class="flex-initial mr-3">
+                    <a mat-icon-button color="primary"
+                       [routerLink]="['/secretaria/estudante']">
+                        <mat-icon>arrow_back</mat-icon>
+                    </a>
+                </div>
+                <div class="flex-initial w-150 text-3xl font-bold">
+                    Responsável Estudante
+                </div>
+            </div>
+
+            <form class="flex-auto md:flex-auto sm:flex-auto mt-8 p-4 bg-card shadow rounded overflow-hidden" [formGroup]="responsavelForm" (ngSubmit)="cadastrarResponsavel()">
+
+                <sisedu-cabecalho-estudante></sisedu-cabecalho-estudante>
+                
+                <ng-template>Dados do Responsável</ng-template>
+                <div class="grid grid-cols-1 gap-1 mb-5" *ngIf="mensagemErro">
+                    <fuse-alert [type]="'error'">
+                        <span fuseAlertTitle>Erro no envio do formulário!!</span>
+                        <div [innerHTML]="mensagemErro"></div>
+                    </fuse-alert>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                    <mat-form-field>
+                        <mat-label>CPF</mat-label>
+                        <input matInput
+                               mask="000.000.000-00"
+                               [showMaskTyped]="true"
+                               [dropSpecialCharacters]="false"
+                               formControlName="cpf" required (change)="buscarResponsavelPorCpf()">
+                        <sisedu-erro class="absolute w-full" [campo]="responsavelForm.get('cpf')"></sisedu-erro>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Nome</mat-label>
+                        <input matInput formControlName="nome" required>
+                        <sisedu-erro class="absolute w-full" [campo]="responsavelForm.get('nome')"></sisedu-erro>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Sobrenome</mat-label>
+                        <input matInput formControlName="sobrenome" required>
+                        <sisedu-erro class="absolute w-full" [campo]="responsavelForm.get('sobrenome')"></sisedu-erro>
+                    </mat-form-field>
+                </div>
+
+                <div class="grid md:grid-cols-4 gap-2 sm:grid-cols-1">
+                    <mat-form-field>
+                        <mat-label>RG</mat-label>
+                        <input matInput formControlName="rg">
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>E-mail</mat-label>
+                        <input matInput formControlName="email">
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Telefone Residencial</mat-label>
+                        <input matInput formControlName="telefone"
+                               mask="(00) 0000-0000"
+                               [dropSpecialCharacters]="false"
+                               [showMaskTyped]="true">
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Celular</mat-label>
+                        <input matInput formControlName="celular" mask="(00) 00000-0000"
+                               [dropSpecialCharacters]="false"
+                               [showMaskTyped]="true">
+                    </mat-form-field>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                    <mat-form-field>
+                        <mat-label>Tipo Responsável</mat-label>
+                        <mat-select required formControlName="tipoResponsavel">
+                            <mat-option *ngFor="let tipos of tiposResposavel" [value]="tipos?.descricao">{{tipos?.descricao}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <div class="flex justify-end">
+                    <button
+                            class="px-8 m-3"
+                            mat-flat-button
+                            [color]="'primary'"
+                            [disabled]="botaoSalvarDesabilitado"
+                            type="submit">
+                        Salvar
+                    </button>
+
+                    <button
+                            class="px-8 m-3 bg-red-600"
+                            mat-flat-button
+                            (click)="deletarResponsavel()"
+                            [color]="'accent'"
+                            [disabled]="botaoSalvarDesabilitado"
+                            type="delete"
+                            *ngIf="isExist && isPresent">
+                        Deletar
+                    </button>
+
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

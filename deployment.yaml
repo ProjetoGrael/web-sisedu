@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-sisedu
+  namespace: sisedu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-sisedu
+  template:
+    metadata:
+      labels:
+        app: web-sisedu
+    spec:
+      containers:
+        - name: web-sisedu
+          image: sisedu.azurecr.io/hmg/web-sisedu:1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-sisedu-lb
+  namespace: sisedu
+spec:
+  selector:
+    app: web-sisedu
+  type: LoadBalancer
+  ports:
+    - port: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: web-sisedu-ingress
+  namespace: sisedu
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: sisedu.projetograel.com.br
+  http:
+    paths:
+      - path: /
+        backend:
+        serviceName: web-sisedu-lb
+        servicePort: 80

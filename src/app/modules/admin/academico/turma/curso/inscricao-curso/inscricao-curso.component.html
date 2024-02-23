@@ -1,0 +1,212 @@
+<fuse-loading-bar></fuse-loading-bar>
+<div class="overflow-x-auto flex flex-col flex-auto min-w-180">
+    <div class="flex-auto p-6 sm:p-10">
+        <div class="overflow-x-auto h-200 min-h-200">
+            <div class="mb-4 text-2xl font-bold">Inscrição na Turma</div>
+            
+                <div class="bg-white pr-5 pl-5 pt-2 mt-10">
+                    <div class="mb-4 text-2xl font-bold">Estudante Inscritos</div>
+                    <div *ngIf="isEmptyIncritos" class="flex flex-col items-center justify-center h-full pb-10">
+                        <div class="text-center">
+                            <h1 class="text-24">Não há estudantes inscritos nesse Curso</h1>
+                        </div>
+                    </div>
+                    <div *ngIf="!isEmptyIncritos" class="overflow-x-auto flex justify-between items-center p-2">
+                        <div class="flex-initial w-64">
+                            <mat-form-field class="min-w-full">
+                                <mat-label>Filtrar</mat-label>
+                                <input (keyup)="filtrarInscritos($event)" matInput type="text">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div *ngIf="!isEmptyIncritos">
+                        <table [dataSource]="dataSourceInscritos" class="min-w-full mat-elevation-z8" mat-table matSort>
+
+                            <ng-container matColumnDef="matricula">
+                                <th *matHeaderCellDef mat-header-cell mat-sort-header>Matrícula</th>
+                                <td *matCellDef="let estudante" mat-cell> {{estudante.matricula}} </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="nome">
+                                <th *matHeaderCellDef mat-header-cell mat-sort-header>Nome</th>
+                                <td *matCellDef="let estudante" mat-cell>{{estudante.nome}} {{estudante.sobrenome}}</td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="dataNascimento">
+                                <th *matHeaderCellDef mat-header-cell mat-sort-header>Data de Nascimento</th>
+                                <td *matCellDef="let estudante" mat-cell> {{estudante.dataNascimento}} </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="acoes">
+                                <th *matHeaderCellDef mat-header-cell>Opções</th>
+                                <td *matCellDef="let estudante" mat-cell>
+                                    <button [matMenuTriggerFor]="menu" aria-label="Opções" mat-icon-button>
+                                        <mat-icon>reorder</mat-icon>
+                                    </button>
+                                    <mat-menu #menu="matMenu">
+                                        <button (menuOpened)="listarCursos(estudante)" [matMenuTriggerFor]="menuTurmas"
+                                                mat-menu-item>
+                                            <mat-icon>transfer_within_a_station</mat-icon>
+                                            <span>Transferir de Turma</span>
+                                            <mat-menu #menuTurmas="matMenu">
+                                                <button (click)="transferirEstudante(curso, estudante)" *ngFor="let curso of cursos"
+                                                        mat-menu-item>
+                                                    <mat-icon>class</mat-icon>
+                                                    <span>{{curso?.instrutorDisciplina?.disciplina?.nome}} - </span>
+                                                    <span>{{curso?.turma?.nomeFantasia}}</span>
+                                                </button>
+                                                <p *ngIf="isEmptyListTurmas" class="text-center">Não há turmas
+                                                    disponíveis para transferência</p>
+                                            </mat-menu>
+                                        </button>
+                                        <button (click)="desativarInscricao(estudante)" mat-menu-item>
+                                            <mat-icon>cancel</mat-icon>
+                                            <span>Desativar Inscrição</span>
+                                        </button>
+                                    </mat-menu>
+                                </td>
+                            </ng-container>
+                            <tr *matHeaderRowDef="displayedColumnsInscritos" mat-header-row></tr>
+                            <tr *matRowDef="let row; columns: displayedColumnsInscritos;" mat-row></tr>
+                        </table>
+                    </div>
+                    <div class="mt-2 pt-2"></div>
+                </div>
+                <div class="m-10"></div>
+                <div class="bg-white pr-5 pl-5 pt-2">
+                    <div class="mb-4 text-2xl font-bold">Estudantes Habilitados para inscrição</div>
+                    <div class="overflow-x-auto flex justify-between items-center p-2">
+                        <div class="flex-initial w-64">
+                            <mat-form-field *ngIf="!isEmptyListHabilitados" class="min-w-full">
+                                <mat-label>Filtrar</mat-label>
+                                <input (keyup)="filtrar($event)" matInput type="text">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="grid-cols-12 mb-5">
+                        <fuse-alert
+                                *ngIf="showAlert"
+                                [@shake]="alert.type === 'success'"
+                                [appearance]="'outline'"
+                                [dismissible]="true"
+                                [showIcon]="true"
+                                [type]="alert.type">
+                            {{alert.message}}
+                        </fuse-alert>
+                    </div>
+                    <div *ngIf="!isEmptyListHabilitados">
+                        <table [dataSource]="dataSourceHabilitados" class="min-w-full mat-elevation-z8" mat-table
+                               matSort >
+
+                            <ng-container matColumnDef="selecionar">
+                                <th *matHeaderCellDef mat-header-cell mat-sort-header>Selecionar</th>
+                                <td *matCellDef="let estudante" mat-cell>
+                                    <mat-checkbox (change)="atualizarSelecao($event, estudante.id)"></mat-checkbox>
+                                </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="matricula">
+                                <th *matHeaderCellDef mat-header-cell mat-sort-header>Matrícula</th>
+                                <td *matCellDef="let estudante" mat-cell> {{estudante.matricula}} </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="nome">
+                                <th *matHeaderCellDef mat-header-cell mat-sort-header>Nome</th>
+                                <td *matCellDef="let estudante" mat-cell>{{estudante.nome}} {{estudante.sobrenome}}</td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="dataNascimento">
+                                <th *matHeaderCellDef mat-header-cell mat-sort-header>Data de Nascimento</th>
+                                <td *matCellDef="let estudante" mat-cell> {{estudante.dataNascimento}} </td>
+                            </ng-container>
+
+                            <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+                            <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
+                        </table>
+                    </div>
+                    <div *ngIf="!isEmptyListHabilitados" class="flex justify-end p-10">
+                        <button (click)="inscreverEstudantes()"
+                                color="primary"
+                                mat-raised-button>
+                            Inscrever Estudantes
+                        </button>
+                    </div>
+                    <div *ngIf="isEmptyListPosCarregar" class="flex flex-col items-center justify-center h-full pb-10">
+                        <div class="text-center">
+                            <h1 class="text-24">Não há estudantes habilitados para inscrição</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-10"></div>
+                <div class="bg-white pr-5 pl-5 pt-2">
+                    <div class="mb-4 text-2xl font-bold">Lista Geral de Estudantes</div>
+                    <div class="overflow-x-auto flex justify-between items-center p-2">
+                        <div class="flex-initial w-64">
+                            <mat-form-field *ngIf="!isEmptyListGerais" class="min-w-full">
+                                <mat-label>Filtrar</mat-label>
+                                <input (keyup)="filtrarGerais($event)" matInput type="text">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="grid-cols-12 mb-5">
+                        <fuse-alert
+                                *ngIf="showAlert"
+                                [@shake]="alert.type === 'success'"
+                                [appearance]="'outline'"
+                                [dismissible]="true"
+                                [showIcon]="true"
+                                [type]="alert.type">
+                            {{alert.message}}
+                        </fuse-alert>
+                    </div>
+                    <div *ngIf="!isEmptyListGerais">
+                        <table *ngIf="!isEmptyListGerais" [dataSource]="dataSourceGerais" class="min-w-full mat-elevation-z8" mat-table matSort>
+
+                            <ng-container matColumnDef="selecionar">
+                                <th *matHeaderCellDef mat-header-cell mat-sort-header>Selecionar</th>
+                                <td *matCellDef="let estudante" mat-cell>
+                                    <mat-checkbox (change)="atualizarSelecao($event, estudante.id)"></mat-checkbox>
+                                </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="matricula">
+                                <th *matHeaderCellDef mat-header-cell mat-sort-header>Matrícula</th>
+                                <td *matCellDef="let estudante" mat-cell> {{estudante.matricula}} </td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="nome">
+                                <th *matHeaderCellDef mat-header-cell mat-sort-header>Nome</th>
+                                <td *matCellDef="let estudante" mat-cell>{{estudante.nome}} {{estudante.sobrenome}}</td>
+                            </ng-container>
+
+                            <ng-container matColumnDef="dataNascimento">
+                                <th *matHeaderCellDef mat-header-cell mat-sort-header>Data de Nascimento</th>
+                                <td *matCellDef="let estudante" mat-cell> {{estudante.dataNascimento}} </td>
+                            </ng-container>
+
+                            <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+                            <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
+                        </table>
+                        <mat-paginator
+                                [length]="paginacao?.total"
+                                [pageIndex]="paginacao?.pagina"
+                                [pageSizeOptions]="[5, 10, 20]"
+                                aria-label="Selecione a página"
+                                showFirstLastButtons>
+                        </mat-paginator>
+                    </div>
+                    <div *ngIf="!isEmptyListGerais" class="flex justify-end p-10">
+                        <button (click)="inscreverEstudantes()"
+                                color="primary"
+                                mat-raised-button>
+                            Inscrever Estudantes
+                        </button>
+                    </div>
+                    <div *ngIf="isEmptyListGerais" class="flex flex-col items-center justify-center h-full pb-10">
+                        <div class="text-center">
+                            <h1 class="text-24">Não há estudantes gerais para exibição</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+</div>

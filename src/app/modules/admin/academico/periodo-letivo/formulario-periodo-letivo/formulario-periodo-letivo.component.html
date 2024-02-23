@@ -1,0 +1,84 @@
+<fuse-loading-bar></fuse-loading-bar>
+<div class="flex flex-col flex-auto min-w-0">
+    <div class="flex-auto p-6 sm:p-10">
+        <div class="h-400 min-h-400 max-h-400">
+            <div class="flex items-center p-2 mt-16 mb-8">
+                <div class="flex-initial mr-3">
+                    <a mat-icon-button color="primary"
+                       [routerLink]="['/academico/periodo-letivo']">
+                        <mat-icon>arrow_back</mat-icon>
+                    </a>
+                </div>
+                <div *ngIf="existePeriodo" class="flex-initial w-150 text-3xl font-bold">
+                    Editando Periodo Letivo
+                </div>
+                <div *ngIf="!existePeriodo" class="flex-initial w-150 text-3xl font-bold">
+                    Novo Periodo Letivo
+                </div>
+            </div>
+
+            <form class="flex-auto md:flex-auto sm:flex-auto mt-8 p-4 bg-card shadow rounded overflow-hidden"
+                  [formGroup]="periodoLetivoForm" (ngSubmit)="salvar()">
+
+                <ng-template>Dados da Periodo Letivo</ng-template>
+                <div class="grid grid-cols-1 gap-1 mb-5" *ngIf="mensagemErro">
+                    <fuse-alert [type]="'error'">
+                        <span fuseAlertTitle>Erro no envio do formulário!!</span>
+                        <div [innerHTML]="mensagemErro"></div>
+                    </fuse-alert>
+                </div>
+
+                <div *ngIf="carregandoDados" class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                    <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                    <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                    <ngx-skeleton-loader appearance="line" animation="pulse"></ngx-skeleton-loader>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                    <mat-form-field>
+                        <mat-label>Nome:</mat-label>
+                        <input matInput formControlName="nome" required>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Inicio:</mat-label>
+                        <input matInput [matDatepicker]="pickerDataInicio" formControlName="dataInicio">
+                        <mat-datepicker-toggle matSuffix [for]="pickerDataInicio"></mat-datepicker-toggle>
+                        <mat-datepicker #pickerDataInicio></mat-datepicker>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Fim:</mat-label>
+                        <input matInput [matDatepicker]="pickerDataFim" formControlName="dataFim">
+                        <mat-datepicker-toggle matSuffix [for]="pickerDataFim"></mat-datepicker-toggle>
+                        <mat-datepicker #pickerDataFim></mat-datepicker>
+                    </mat-form-field>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-2 sm:grid-cols-1">
+                    <mat-form-field>
+                        <mat-label>Capacidade:</mat-label>
+                        <input matInput type="number" formControlName="capacidade" required>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Status:</mat-label>
+                        <mat-select formControlName="status" required>
+                            <mat-option *ngFor="let status of statusPeriodo" [value]="status?.id">
+                                {{status?.descricao}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+
+                <div class="flex justify-end">
+                    <button
+                            class="px-8 m-3"
+                            mat-flat-button
+                            [color]="'primary'"
+                            [disabled]="botaoSalvarDesabilitado"
+                            type="submit">
+                        Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

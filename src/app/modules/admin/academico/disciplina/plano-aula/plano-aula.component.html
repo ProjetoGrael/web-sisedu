@@ -1,0 +1,109 @@
+<fuse-loading-bar></fuse-loading-bar>
+<div class="flex flex-1 justify-center h-4/6 md:h-full">
+    <div class="flex w-full  sm:p-10 flex-col">
+        <div class="flex p-2">
+            <div class="flex-initial mr-3">
+                <a mat-icon-button color="primary" [routerLink]="voltar()">
+                    <mat-icon>arrow_back</mat-icon>
+                </a>
+            </div>
+            <div class="flex-initial w-150 text-3xl font-bold">
+                Plano de Aula
+            </div>
+        </div>
+
+
+        <form class="flex-auto md:flex-auto sm:flex-auto mt-4 p-4 bg-card shadow rounded overflow-hidden" [formGroup]="planoAulaForm" (submit)="dialogAdicionarPlanoAula()">
+            <div class="grid grid-cols-1 gap-1 mb-5" *ngIf="mensagemErro">
+                <fuse-alert [type]="'error'">
+                    <span fuseAlertTitle>Erro no envio do formulário!!</span>
+                    {{mensagemErro}}
+                </fuse-alert>
+            </div>
+            <div class="grid md:grid-cols-1 gap-2 sm:grid-cols-1 mb-4">
+                <div class="text-4xl">
+                    {{disciplina.nome}}
+                </div>
+                <div class="text-2xl">
+                    
+                </div>
+            </div>
+            <mat-divider class="mb-8"></mat-divider>
+            <div class="grid md:grid-cols-3 gap-2 sm:grid-cols-3 mt-8">
+                <mat-form-field>
+                    <mat-label>Ordenação</mat-label>
+                    <input matInput formControlName="ordenacao" type="text" readonly="true">
+                </mat-form-field>
+            </div>
+            <div class="grid md:grid-cols-1 gap-2 sm:grid-cols-3 mt-8">
+                <mat-form-field>
+                    <mat-label>Anotações</mat-label>
+                    <textarea matInput #anotacoes maxlength="200" formControlName="anotacoes" required></textarea>
+                    <mat-hint align="end">{{anotacoes.value?.length || 0}}/200</mat-hint>
+                    <sisedu-erro class="absolute w-full"></sisedu-erro>
+                </mat-form-field>            
+            </div>
+            <div class="grid md:grid-cols-1 gap-2 sm:grid-cols-3 mt-8">
+                <mat-form-field>
+                    <mat-label>Observações</mat-label>
+                    <textarea matInput #observacoes maxlength="200" formControlName="observacoes" ></textarea>
+                    <mat-hint align="end">{{observacoes.value?.length || 0}}/200</mat-hint>
+                    <sisedu-erro class="absolute w-full"></sisedu-erro>
+                </mat-form-field>
+            </div>
+            <div class="flex items-center">
+                <button class="ml-4 mr-4" mat-flat-button [color]="'primary'" type="submit" [disabled]="planoAulaForm.invalid" >
+                    {{idPlanoDeAula ? "Atualizar" : "Adicionar"}}
+                </button>
+                <a mat-flat-button [color]="'warn'" (click)="cancelar()">
+                    Cancelar
+                </a>
+            </div>
+            <mat-divider class="mt-8"></mat-divider>
+            <div>
+                <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" style="width: 100%" matSort>
+
+                    <ng-container matColumnDef="ordenacao">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Ordenação</th>
+                        <td mat-cell *matCellDef="let planoAula">{{planoAula.ordenacao}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="anotacoes">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Anotações</th>
+                        <td mat-cell class="truncate max-w-30" [matTooltip]="planoAula.anotacoes" *matCellDef="let planoAula">{{planoAula.anotacoes}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="observacoes">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Observações</th>
+                        <td mat-cell class="truncate max-w-30" [matTooltip]="planoAula.observacoes" *matCellDef="let planoAula">{{planoAula.observacoes}}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="opcoes">
+                        <th mat-header-cell *matHeaderCellDef>Opções</th>
+                        <td mat-cell *matCellDef="let planoAula">
+                            <a mat-icon-button [matMenuTriggerFor]="menu" aria-label="Opções" >
+                                <mat-icon>reorder</mat-icon>
+                            </a>
+                            <mat-menu #menu="matMenu">
+                                <a mat-menu-item (click)="editar(planoAula.id)">
+                                    <mat-icon>edit</mat-icon>
+                                    <span>Editar</span>
+                                </a>
+                            </mat-menu>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+                <mat-paginator
+                        [pageSizeOptions]="[5, 10, 20]"
+                        [length]="paginacao?.total"
+                        [pageIndex]="paginacao?.pagina"
+                        aria-label="Selecione a página"
+                        showFirstLastButtons>
+                </mat-paginator>
+            </div>
+        </form>
+    </div>
+</div>
